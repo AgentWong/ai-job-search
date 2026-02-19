@@ -1,0 +1,451 @@
+{% from 'macros.xml.j2' import section_header %}
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" mc:Ignorable="w14 wp14 w15">
+<w:body>
+
+{# ============================================================ #}
+{# NAME HEADER - Georgia 18pt, bold, dark blue (ATS-friendly)   #}
+{# ============================================================ #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:cs="Arial"/>
+            <w:b/><w:bCs/>
+            <w:color w:val="142440"/>
+            <w:sz w:val="36"/><w:szCs w:val="36"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Arial" w:ascii="Georgia" w:hAnsi="Georgia"/>
+            <w:b/><w:bCs/>
+            <w:color w:val="142440"/>
+            <w:sz w:val="36"/><w:szCs w:val="36"/>
+        </w:rPr>
+        <w:t>{{ name }}</w:t>
+    </w:r>
+</w:p>
+
+{# Horizontal line after name #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
+        <w:spacing w:lineRule="auto" w:line="276" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="10"/><w:szCs w:val="10"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="10"/><w:szCs w:val="10"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# CONTACT INFO - Calibri 11pt, centered                        #}
+{# ============================================================ #}
+{% for line in contact %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="{{ '80' if loop.first else '0' }}" w:after="0"/>
+        <w:jc w:val="center"/>
+        <w:rPr></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr></w:rPr><w:t>{{ line }}</w:t></w:r>
+</w:p>
+{% endfor %}
+
+{# Spacer with border before sections #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="80"/>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
+            <w:b/><w:bCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# EXPERIENCE SECTION                                           #}
+{# ============================================================ #}
+{{ section_header("EXPERIENCE") }}
+
+{# Spacer after section header #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr><w:sz w:val="4"/><w:szCs w:val="4"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="4"/><w:szCs w:val="4"/></w:rPr></w:r>
+</w:p>
+
+{% for exp in experience %}
+{# Experience header: Company • Location • Role [TAB] Dates #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ exp.company }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ exp.location }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ exp.role }}</w:t>
+        <w:tab/>
+    </w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ exp.dates }}</w:t>
+    </w:r>
+</w:p>
+
+{# Bullet points for this experience #}
+{% for bullet in exp.bullets %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>
+        <w:spacing w:lineRule="auto" w:line="216" w:before="0" w:after="80"/>
+        <w:ind w:hanging="187" w:start="187" w:end="0"/>
+        <w:contextualSpacing/>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b w:val="false"/><w:bCs w:val="false"/>
+            <w:i w:val="false"/><w:iCs w:val="false"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b w:val="false"/><w:bCs w:val="false"/>
+            <w:i w:val="false"/><w:iCs w:val="false"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t>{{ bullet }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+{% endfor %}
+
+{# Prior experience entries (minimal info, no bullets) #}
+{% if prior_experience %}
+{% for prior in prior_experience %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ prior.company }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ prior.location }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ prior.role }}</w:t>
+        <w:tab/>
+    </w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ prior.dates }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+{% endif %}
+
+{# Empty spacer before next section #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# PROJECTS SECTION                                             #}
+{# ============================================================ #}
+{{ section_header("PROJECTS") }}
+
+{% for proj in projects %}
+{# Line 1: Project Name + Date (right-aligned) #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:b/><w:bCs/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t>{{ proj.name }}</w:t>
+    </w:r>
+    <w:r>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:tab/>
+        <w:t>{{ proj.date }}</w:t>
+    </w:r>
+</w:p>
+{# Line 2: Bullet with short description #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="60"/>
+        <w:ind w:hanging="187" w:start="187" w:end="0"/>
+        <w:contextualSpacing/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t>{{ proj.bullet }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# Empty spacer #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# SKILLS SECTION                                               #}
+{# ============================================================ #}
+{{ section_header("SKILLS") }}
+
+{% for skill in technical_expertise %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:b/><w:bCs/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t>{{ skill.category }}</w:t>
+    </w:r>
+    <w:r>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t xml:space="preserve"> &#8211; {{ skill.technologies }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# Empty spacer #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# CERTIFICATIONS SECTION                                       #}
+{# ============================================================ #}
+{{ section_header("CERTIFICATIONS") }}
+
+{% for cert in certifications %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:b/><w:bCs/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t>{{ cert.abbrev }}</w:t>
+    </w:r>
+    <w:r>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t xml:space="preserve"> &#8211; {{ cert.name }}</w:t>
+        <w:tab/>
+        <w:t>{{ cert.date }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# Empty spacer #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:jc w:val="both"/>
+        <w:rPr></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# EDUCATION SECTION                                            #}
+{# ============================================================ #}
+{{ section_header("EDUCATION") }}
+
+{% for edu in education %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
+        <w:spacing w:before="0" w:after="160"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ edu.institution }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ edu.location }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ edu.degree }} </w:t>
+    </w:r>
+    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:b/><w:bCs/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t> {{ edu.field }}</w:t>
+        <w:tab/>
+    </w:r>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:cs="Calibri"/>
+            <w:i/><w:iCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ edu.date }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# ============================================================ #}
+{# PAGE SETTINGS (sectPr)                                       #}
+{# ============================================================ #}
+<w:sectPr>
+    <w:type w:val="nextPage"/>
+    <w:pgSz w:w="12240" w:h="15840"/>
+    <w:pgMar w:left="1152" w:right="1152" w:gutter="0" w:header="0" w:top="1152" w:footer="0" w:bottom="1152"/>
+    <w:pgNumType w:fmt="decimal"/>
+    <w:formProt w:val="false"/>
+    <w:textDirection w:val="lrTb"/>
+    <w:docGrid w:type="default" w:linePitch="360" w:charSpace="4096"/>
+</w:sectPr>
+
+</w:body>
+</w:document>

@@ -1,0 +1,115 @@
+# Job Search Inclusions Configuration
+# This file defines what to search for across job hunt workflows.
+# Edit this file to add/remove/reorder job boards and roles.
+
+---
+
+# Job boards to search (in priority order)
+# The workflow will search these in sequence, top to bottom.
+# Add new job boards here to automatically include them in searches.
+job_boards:
+  # Format: domain, name, scrapable (true if we can extract job details)
+
+  # ATS Platforms (scrapable)
+  - domain: jobs.ashbyhq.com
+    name: Ashby
+    scrapable: true
+    notes: "Verified scrapable"
+
+  - domain: boards.greenhouse.io
+    name: Greenhouse
+    scrapable: true
+    notes: "Search works but individual jobs redirect to company sites"
+
+  - domain: jobs.lever.co
+    name: Lever
+    scrapable: true
+    notes: "Search works but may return 404 on direct access"
+
+  - domain: myworkdayjobs.com
+    name: Workday
+    scrapable: true
+    notes: "Search works; detail page scraping inconsistent across companies (JS-heavy)"
+
+  - domain: icims.com
+    name: iCIMS
+    scrapable: true
+    notes: "URL pattern: careers-{company}.icims.com. Used by defense, healthcare, enterprise"
+
+  - domain: jobs.smartrecruiters.com
+    name: SmartRecruiters
+    scrapable: true
+    notes: "Clean structured pages. Used by Western Digital, Avery Dennison, Nielsen"
+
+  - domain: apply.workable.com
+    name: Workable
+    scrapable: true
+    notes: "Popular with mid-size companies and startups. Clean markdown output"
+
+  - domain: recruiting.paylocity.com
+    name: Paylocity
+    scrapable: true
+    notes: "Growing ATS platform. Clean parsing"
+---
+
+# Roles to search for (in priority order)
+# The workflow will search for these roles in sequence, top to bottom.
+# Each role is searched across all job boards before moving to the next role.
+# This allows you to prioritize DevOps over Cloud Engineer, etc.
+target_roles:
+  # Primary roles (always search)
+  primary:
+    - name: DevOps Engineer
+      priority: 1
+
+    - name: Infrastructure Engineer
+      priority: 2
+
+    - name: Cloud Engineer
+      priority: 3
+
+  # Secondary roles (search if primary yields < target_positions)
+  secondary:
+    - name: Platform Engineer
+      priority: 4
+
+    - name: Site Reliability Engineer
+      priority: 5
+
+    - name: Cloud Operations
+      priority: 6
+
+    - name: Cloud Administrator
+      priority: 7
+
+---
+
+# Search configuration
+search_config:
+  # Minimum qualified positions before stopping early
+  target_positions: 40
+
+  # Results per search query
+  search_limit: 10
+
+  # Time filter for browser job searches (used by hiringcafe workflow)
+  # Options: "past_day" (24 hours), "past_week" (7 days), or "past_month" (30 days)
+  time_filter: "past_day"
+
+  # Google search time filter (used by firecrawl workflows)
+  # d = past day, w = past week, m = past month
+  google_time_filter: "qdr:d"
+
+---
+
+# Workflow Statistics Tracking
+# These thresholds help identify when roles or criteria need adjustment
+statistics:
+  # If a role has a qualification rate below this threshold, flag it
+  min_qualification_rate: 0.05  # 5% - if <5% of found positions qualify, role may be unsuitable
+
+  # If a job board has a qualification rate below this threshold, flag it
+  min_board_qualification_rate: 0.03  # 3% - if <3% qualify, board may not be worth searching
+
+  # Track effectiveness per role for optimization recommendations
+  track_effectiveness: true

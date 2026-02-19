@@ -1,0 +1,27 @@
+# Job Search Exclusions Configuration
+# Companies to exclude from all job search workflows.
+# Add companies here as you apply, get rejected, or determine they are not a fit.
+
+---
+
+# Companies to exclude from all searches
+# Combines: applied, rejected, and removed from monitoring
+excluded_companies:
+
+  # Contractor/Staffing/Aggregator
+  - Dice
+  - Jobs via Dice
+
+  # Previously applied
+  - Acme Corp
+  - Initech
+  - Globex Corporation
+
+  # Previously rejected
+  - Umbrella Corporation
+  - Hooli
+
+  # Removed from monitoring (offshoring, RTO, excluded industries, etc.)
+  - Massive Dynamic
+  - Pied Piper
+  - Soylent Corp

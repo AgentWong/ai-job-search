@@ -1,0 +1,25 @@
+{# ============================================================ #}
+{# Macro: Section Header with bottom border (ATS-friendly)      #}
+{# ============================================================ #}
+{% macro section_header(title) %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="80"/>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
+            <w:b/><w:bCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
+            <w:b/><w:bCs/>
+            <w:color w:val="142440"/>
+        </w:rPr>
+        <w:t>{{ title }}</w:t>
+    </w:r>
+</w:p>
+{% endmacro %}
