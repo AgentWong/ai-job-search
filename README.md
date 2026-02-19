@@ -61,7 +61,7 @@ Resume tailoring uses your `config/cv_full.md` as the source of truth. The agent
 
 1. **Clone the repo:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/ai-job-search.git
+   git clone https://github.com/AgentWong/ai-job-search
    cd ai-job-search
    ```
 
