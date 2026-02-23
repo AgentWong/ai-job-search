@@ -238,6 +238,9 @@ The key difference is between *using* existing tools/writing scripts vs *develop
 | "Whatever it takes" | Overwork expectation |
 | "Rockstar/Ninja/Guru" | Unrealistic expectations |
 | "Firefighting" emphasis | Crisis culture |
+| "We're a family" / "family environment" | Boundary issues, overwork guilt |
+| "Passionate" as compensation substitute | Passion exploited in lieu of pay/benefits |
+| "No ego" / "leave your ego at the door" | Discourages self-advocacy |
 
 **On-Call Disqualifications:**
 | Trigger | Reason |

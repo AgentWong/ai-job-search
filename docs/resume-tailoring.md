@@ -63,6 +63,14 @@ This generates PDFs of all DOCX files in the directory. **Requires LibreOffice i
 
 After applying, add the companies to `config/exclusions.yml` so future discovery runs don't surface positions you've already applied to.
 
+## Writing Style Guide (`docs/writing_style_guide.md`)
+
+The resume tailoring agents include built-in anti-AI-detection rules (avoid "leveraged," "spearheaded," etc.), but these defaults only get you halfway. For resumes that genuinely sound like you wrote them, create a writing style guide with samples of your actual writing.
+
+See [docs/writing_style_guide.md](writing_style_guide.md) for a template with instructions on how to populate it with your own voice. The agents automatically read this file if it exists.
+
+**Why bother?** Recruiters are increasingly spotting and discarding AI-generated resumes. The telltale signs aren't just banned words -- it's the uniform cadence, the lack of personality, the same structure in every bullet. A style guide grounded in your real writing is what separates a polished AI-assisted resume from an obvious AI-generated one.
+
 ## About the Full CV (`config/cv_full.md`)
 
 The resume tailoring system works best with a **comprehensive** full CV. The idea is to maintain a large pool of your entire professional experience described in as much detail as possible. The AI then selects the most relevant items for each specific job posting.

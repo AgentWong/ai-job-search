@@ -46,7 +46,7 @@ The workflows use [Model Context Protocol (MCP)](https://modelcontextprotocol.io
 | `/tailor-resume` | Generate a 1-page keyword-optimized DOCX resume for each job in `config/target_jobs/` | [Guide](docs/resume-tailoring.md) |
 | `/tailor-resume-full` | Generate a 2-page resume + cover letter for each job in `config/target_jobs/` | [Guide](docs/resume-tailoring.md) |
 
-Resume tailoring uses your `config/cv_full.md` as the source of truth. The agent extracts keywords from the job posting, matches them to your actual experience, and generates a DOCX file using your template. **No fabrication** -- if a skill isn't in your CV, it won't appear on the resume.
+Resume tailoring uses your `config/cv_full.md` as the source of truth. The agent extracts keywords from the job posting, matches them to your actual experience, and generates a DOCX file using your template. **No fabrication** -- if a skill isn't in your CV, it won't appear on the resume. For resumes that sound like you wrote them (not like ChatGPT wrote them), populate `docs/writing_style_guide.md` with samples of your actual writing.
 
 ## Quick Start
 
@@ -98,6 +98,7 @@ All configuration is in the `config/` directory. The included files are working 
 | `config/inclusions.yml` | Define which ATS boards to search and which role titles to look for |
 | `config/exclusions.yml` | Add companies you've already applied to or want to skip |
 | `config/company_targets.csv` | Curate companies you want to monitor directly |
+| `docs/writing_style_guide.md` | Add samples of your own writing so AI-generated resumes sound like you (see [guide](docs/writing_style_guide.md)) |
 
 The `shared/` directory contains scoring rules that reference your preferences:
 
@@ -138,6 +139,7 @@ ai-job-search/
 ├── results/
 │   └── application_queue.csv # Output: qualified positions
 └── docs/                 # Additional documentation
+    └── writing_style_guide.md  # Template for your writing voice
 ```
 
 ## Scoring System
