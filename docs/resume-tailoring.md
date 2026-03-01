@@ -75,6 +75,27 @@ See [docs/writing_style_guide.md](writing_style_guide.md) for a template with in
 
 The resume tailoring system works best with a **comprehensive** full CV. The idea is to maintain a large pool of your entire professional experience described in as much detail as possible. The AI then selects the most relevant items for each specific job posting.
 
+```mermaid
+flowchart LR
+    CV["📄 Full CV<br>―――――――――<br>🔧 Skill A<br>🔧 Skill B<br>🔧 Skill C<br>🔧 Skill D<br>🔧 Skill E<br>💼 Role 1 • 8 bullets<br>💼 Role 2 • 6 bullets<br>💼 Role 3 • 5 bullets<br>📁 Project X<br>📁 Project Y<br>📁 Project Z"]
+
+    JOB["📋 Job Posting<br>Keywords:<br>Terraform, AWS,<br>CI/CD, Python"]
+
+    CV --> AGENT
+    JOB --> AGENT
+
+    AGENT["🤖 Resume Agent<br>―――――――――――<br>✅ Select relevant skills<br>✅ Pick strongest bullets<br>✅ Reword for brevity<br>❌ Never fabricate"]
+
+    AGENT --> RESUME["📄 Tailored Resume<br>―――――――――――<br>🔧 Skill A ← matched<br>🔧 Skill C ← matched<br>💼 Role 1 • 3 best bullets<br>💼 Role 3 • 2 best bullets<br>📁 Project X ← relevant"]
+
+    style CV fill:#e8f4e8,stroke:#2d6a2d
+    style JOB fill:#e8ecf4,stroke:#2d3d6a
+    style AGENT fill:#fff8e8,stroke:#6a5a2d
+    style RESUME fill:#f4e8e8,stroke:#6a2d2d
+```
+
+**Key principle:** The AI is explicitly instructed to never fabricates skills or experiences (trust, but verify the results). It only selects and rewords entries that already exist in your full CV. This is why comprehensiveness matters -- the more raw material you provide, the better the AI can match your real experience to each job posting.
+
 This isn't obvious when using the 2-page workflow (which has room for most experience), but becomes critical for 1-page resumes where the AI must make tough choices about what to include.
 
 The example `config/cv_full.md` is intentionally brief as a template. For reference, a real full CV might be 200+ lines covering every role, project, and technical detail from your career. Fill it out as completely as possible for best results.
