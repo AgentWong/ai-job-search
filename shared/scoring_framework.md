@@ -270,27 +270,6 @@ The key difference is between *using* existing tools/writing scripts vs *develop
 | "PhD required" | Exceeds background |
 | "Computer Science degree required" | Associates in IT held |
 
-### Category 7: Company Rating Disqualifications (Score 1-2)
-
-**⚠️ APPLIES TO: Indeed and Glassdoor searches only**
-
-These platforms display company ratings (out of 5 stars) that provide valuable signal about company quality. Company rating is checked during Phase 2 (detail fetching) when visiting individual job pages.
-
-**Rating Disqualifications:**
-| Trigger | Score | Reason |
-|---------|-------|--------|
-| Company rating ≤ 3.0 stars | 1-2 | Poor company culture/management; takes significant issues to rate this low |
-| No rating information displayed | 1-2 | Indicates fake posting, suspicious company, or startup too new/small for reliable data |
-
-**Why These Thresholds:**
-- **3.0 or below:** Larger companies rarely drop this low unless there are serious systemic issues. Even companies with occasional complaints typically maintain 3.5+. A rating of 3.0 or below signals significant employee dissatisfaction.
-- **No rating:** The absence of rating data on platforms that normally display it suggests either:
-  1. A fake/spam job posting with a non-existent company
-  2. A very early-stage startup without enough employees to generate reviews
-  3. A company trying to obscure their identity
-
-**Note:** This applies only to Indeed and Glassdoor. Other platforms (LinkedIn, ATS boards, etc.) do not consistently display company ratings and should not be penalized for missing this data.
-
 ---
 
 ## Scoring Examples
@@ -355,7 +334,6 @@ When evaluating a position:
 4. **Check company/industry** - may require brief research
 5. **Check cultural indicators** - look for red flag phrases
 6. **Check experience requirements** - verify year requirements
-7. **Check company rating (Indeed/Glassdoor only)** - verify rating > 3.0 stars and exists
 
 ### Scoring Assignment by Disqualification Category
 
@@ -367,7 +345,6 @@ When evaluating a position:
 | Company/Industry | 2-3 |
 | Cultural Issues | 2-3 |
 | Experience Level | 1-3 |
-| Company Rating (Indeed/Glassdoor) | 1-2 |
 
 ### Subagent Implementation Notes
 
@@ -420,8 +397,6 @@ MedCo,Cloud Engineer,https://...,2,Industry,Healthcare IT,Hospital systems compa
 - 24/7 on-call requirements
 - Crypto / Blockchain / Web3 / DeFi companies
 - AI startups (<10,000 employees)
-- Company rating ≤ 3.0 stars (Indeed/Glassdoor only)
-- Missing company rating (Indeed/Glassdoor only)
 
 ---
 

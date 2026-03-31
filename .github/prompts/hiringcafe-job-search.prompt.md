@@ -41,7 +41,7 @@ Orchestrator: Aggregate → Deduplicate → Write CSV → Report
 **Why Single-Phase?**
 - Hiring Cafe search cards display title, company, salary, YOE, tech stack, and requirements summary
 - All scoring criteria can be evaluated from card data alone
-- No separate detail-fetching phase needed (unlike LinkedIn, Indeed, Glassdoor)
+- No separate detail-fetching phase needed
 
 ---
 
