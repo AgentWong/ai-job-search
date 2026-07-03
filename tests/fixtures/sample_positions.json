@@ -1,0 +1,26 @@
+{
+  "positions": [
+    {
+      "company": "NewCo",
+      "title": "DevOps Engineer",
+      "url": "https://newco.com/jobs/10",
+      "quality_score": 7,
+      "iac_tools": "Terraform, Ansible",
+      "cloud_platform": "AWS",
+      "remote_status": "Remote - US",
+      "match_reasons": "Terraform +2, Ansible +2, AWS +2",
+      "disqualifiers": "None"
+    },
+    {
+      "company": "ExampleCorp",
+      "title": "DevOps Engineer",
+      "url": "https://example.com/jobs/1",
+      "quality_score": 6,
+      "iac_tools": "Terraform, Ansible",
+      "cloud_platform": "AWS",
+      "remote_status": "Remote - US",
+      "match_reasons": "Terraform +2, Ansible +2",
+      "disqualifiers": "None"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "rows": [
+    {"role": "DevOps Engineer", "found": 32, "qualified": 1},
+    {"role": "Infrastructure Engineer", "found": 5, "qualified": 0},
+    {"role": "Cloud Engineer", "found": 11, "qualified": 0}
+  ]
+}

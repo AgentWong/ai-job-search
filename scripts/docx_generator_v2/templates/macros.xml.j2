@@ -1,23 +1,24 @@
-{# ============================================================ #}
-{# Macro: Section Header with bottom border (ATS-friendly)      #}
-{# ============================================================ #}
+{# Section Header with bottom border (ATS-friendly).
+   Size 28 (14pt), bottom rule (sz=6), generous w:after for skimmability. #}
 {% macro section_header(title) %}
 <w:p>
     <w:pPr>
         <w:pStyle w:val="Normal"/>
-        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
-        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="80"/>
+        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="140"/>
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="18A24B"/>
+            <w:sz w:val="28"/><w:szCs w:val="28"/>
         </w:rPr>
     </w:pPr>
     <w:r>
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="18A24B"/>
+            <w:sz w:val="28"/><w:szCs w:val="28"/>
         </w:rPr>
         <w:t>{{ title }}</w:t>
     </w:r>

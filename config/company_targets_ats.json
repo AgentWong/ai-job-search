@@ -1,0 +1,46 @@
+{
+  "companies": [
+    {
+      "name": "GitLab",
+      "company_url": "https://about.gitlab.com",
+      "career_page_url": "https://about.gitlab.com/jobs/all-jobs",
+      "ats_platform": "Greenhouse"
+    },
+    {
+      "name": "Fastly",
+      "company_url": "https://www.fastly.com",
+      "career_page_url": "https://www.fastly.com/about/careers",
+      "ats_platform": "Greenhouse"
+    },
+    {
+      "name": "Fly.io",
+      "company_url": "https://fly.io",
+      "career_page_url": "https://fly.io/jobs",
+      "ats_platform": "Ashby"
+    },
+    {
+      "name": "Render",
+      "company_url": "https://render.com",
+      "career_page_url": "https://render.com/careers",
+      "ats_platform": "Ashby"
+    },
+    {
+      "name": "Tailscale",
+      "company_url": "https://tailscale.com",
+      "career_page_url": "https://tailscale.com/careers",
+      "ats_platform": "Ashby"
+    },
+    {
+      "name": "PlanetScale",
+      "company_url": "https://planetscale.com",
+      "career_page_url": "https://planetscale.com/careers",
+      "ats_platform": "Greenhouse"
+    },
+    {
+      "name": "Netlify",
+      "company_url": "https://www.netlify.com",
+      "career_page_url": "https://www.netlify.com/careers",
+      "ats_platform": "Greenhouse"
+    }
+  ]
+}

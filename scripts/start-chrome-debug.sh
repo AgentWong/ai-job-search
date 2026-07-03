@@ -1,8 +1,8 @@
 #!/bin/bash
 # Start Chrome with remote debugging port for MCP connection
-# Uses a dedicated user data directory to preserve browser sessions
+# Uses a dedicated user data directory to preserve LinkedIn session
 
-CHROME_USER_DATA="$HOME/.chrome-job-hunt-automation"
+CHROME_USER_DATA="$HOME/.chrome-linkedin-automation"
 DEBUG_PORT=9222
 
 # Detect Chrome path for macOS
@@ -23,14 +23,14 @@ if [ ! -f "$CHROME" ]; then
 fi
 
 echo "========================================="
-echo "Chrome Debug Mode for Browser Automation"
+echo "Chrome Debug Mode for LinkedIn Automation"
 echo "========================================="
 echo ""
 echo "Starting Chrome with remote debugging on port $DEBUG_PORT"
 echo "User data directory: $CHROME_USER_DATA"
 echo ""
-echo "This browser session is used by Chrome DevTools MCP"
-echo "for automated job search workflows."
+echo "IMPORTANT: Log into LinkedIn in this browser window."
+echo "Your session will persist across restarts."
 echo ""
 echo "To stop: Close the Chrome window or press Ctrl+C"
 echo "========================================="

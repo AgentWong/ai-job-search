@@ -1,4 +1,4 @@
-<!-- CUSTOMIZE: Replace all identity information below (name, contact, LinkedIn, examples, etc.) with your own details before using this agent. -->
+<!-- CUSTOMIZE: Replace all identity information below (name, contact, education, etc.) with your own details before using this agent. -->
 ---
 name: cover-letter
 description: Generate a point-by-point cover letter matching job requirements to CV content. Uses verified CV content only - no fabrication.
@@ -19,21 +19,20 @@ Generate ONE point-by-point cover letter for a specific job posting.
 
 ### 0. Writing Style
 
-<!-- Optional: Create a docs/writing_style_guide.md with your preferred writing voice. If this file exists, the agent will read it. -->
+**You MUST read `config/profile/writing_style_guide.md` before drafting any content.**
 
-**If `docs/writing_style_guide.md` exists, read it before drafting any content.**
-
-All generated text (opening, bullets, closing) must follow a natural writing voice:
+All generated text (opening, bullets, closing) must follow Alex's natural writing voice:
 - **Use plain language:** write like you're explaining what you did to a coworker, not writing a press release
 - **Be specific:** name exact tools, numbers, and outcomes - never say "comprehensive" or "significant"
 - **Avoid AI-flagged words:** Do NOT use "leveraged," "spearheaded," "streamlined," "thrilled," "eager to contribute," "cutting-edge," "proven track record," "esteemed organization," "dynamic team"
+- **No em dashes (—). Period.** They are banned. Use a comma, period, colon, or parentheses instead. Zero exceptions.
 - **Keep it honest and direct:** state what you did and why it matters, skip the flattery
 - **Vary tone:** mix short declarative statements with longer technical explanations
 
 **Opening paragraph style:** State who you are, what you do, and why this role fits. No fluff.
 **Closing paragraph style:** Keep it short. Don't grovel. "Happy to go into more detail on any of this. Thanks for your time."
 
-If you have a writing style guide, see it for examples of good vs. bad phrasing.
+See the full guide for examples of good vs. bad phrasing.
 
 ### 1. No Fabrication
 
@@ -113,10 +112,10 @@ Create a direct opening that:
 - States the role and company
 - Briefly describes relevant background
 - Transitions to the point-by-point breakdown
-- **Uses a natural voice** - direct, no fluff, no "thrilled" or "excited"
+- **Uses Alex's natural voice** - direct, no fluff, no "thrilled" or "excited"
 
 **Good example:**
-"I'm applying for the DevOps Engineer role at Acme Corp. I've spent the past 4 years building Terraform and Ansible automation for cloud infrastructure, and your requirements line up closely with what I've been doing. Here's how my background maps to what you're looking for:"
+"I'm applying for the DevOps Engineer role at Acme Corp. I've spent the past 4 years building Terraform and Ansible automation for cloud infrastructure at Nimbus Technologies, and your requirements line up closely with what I've been doing. Here's how my background maps to what you're looking for:"
 
 **Bad example (do NOT write like this):**
 "I am excited to apply for the DevOps Engineer position at Acme Corp. With 7+ years of experience in cloud infrastructure and automation, my background aligns closely with your requirements, as outlined below:"
@@ -146,8 +145,8 @@ Create JSON matching this schema:
     {
       "requirement": "5+ years experience with AWS cloud services and infrastructure automation",
       "bullets": [
-        "7+ years of IT experience with 4 years focused on AWS cloud architecture",
-        "Engineered Terraform solutions for EC2, EKS, VPC, and Transit Gateway deployments"
+        "7+ years of IT experience with 4 years focused on AWS cloud architecture at Nimbus Technologies",
+        "Engineered comprehensive Terraform solutions for EC2, EKS, VPC, and Transit Gateway deployments"
       ]
     },
     {
@@ -210,7 +209,7 @@ Before saving JSON, count the words in your drafted content:
 
 ---
 
-## Step 7: Save JSON and Generate DOCX
+## Step 7: Save JSON, Validate, Generate DOCX
 
 1. Derive filename from job posting:
    - Input: `Company - Title.md`
@@ -221,7 +220,15 @@ Before saving JSON, count the words in your drafted content:
    # Save to: resumes/generated/tailored/Alex_Johnson_{Company}_{Title}_cover_letter.json
    ```
 
-3. Generate DOCX:
+3. **Validate writing style (HARD GATE)**: Run the validator. It checks word count, em-dashes, "Happy to" phrasing, and banned AI words. If it exits non-zero, do NOT generate the DOCX — rewrite the offending content and re-save the JSON until the validator passes.
+
+   ```bash
+   .venv/bin/python scripts/validate_cover_letter_content.py \
+       resumes/generated/tailored/Alex_Johnson_{Company}_{Title}_cover_letter.json \
+       --variant point_by_point
+   ```
+
+4. Generate DOCX:
    ```bash
    .venv/bin/python scripts/docx_generator_v2/generate_cover_letter.py \
        --input resumes/generated/tailored/Alex_Johnson_{Company}_{Title}_cover_letter.json \
@@ -278,23 +285,23 @@ Before generating output, verify:
 ```
 Dear Recruiting Team:
 
-I'm applying for the DevOps Engineer role at TechCorp Inc. I've spent the past 4 years doing cloud infrastructure and automation work - mostly Terraform, Ansible, and AWS. Here's how my background maps to what you're looking for:
+I'm applying for the DevOps Engineer role at TechCorp Inc. I've spent the past 4 years doing cloud infrastructure and automation work at Nimbus Technologies - mostly Terraform, Ansible, and AWS. Here's how my background maps to what you're looking for:
 
 **3+ years experience with AWS and Infrastructure as Code (Terraform)**
-- Built Terraform configs for AWS infrastructure (EC2, VPC, EKS, Transit Gateway) over 4 years.
-- Cut Splunk cluster deployment from 153 hours of manual work to under 5 hours through Terraform + Ansible automation.
+• Built Terraform configs for AWS infrastructure (EC2, VPC, EKS, Transit Gateway) over 4 years at Nimbus Technologies.
+• Cut Splunk cluster deployment from 153 hours of manual work to under 5 hours through Terraform + Ansible automation.
 
 **Kubernetes/container orchestration experience**
-- Set up EKS clusters with IRSA roles, AWS Load Balancer Controller, and External DNS via Terraform.
-- Built a container image pipeline across 4 Linux distros using GitHub Actions with Trivy scanning and SBOM generation.
+• Set up EKS clusters with IRSA roles, AWS Load Balancer Controller, and External DNS via Terraform.
+• Built a container image pipeline across 4 Linux distros using GitHub Actions with Trivy scanning and SBOM generation.
 
 **CI/CD pipeline development**
-- Wrote GitLab CI pipelines that orchestrate Terraform provisioning and Ansible configuration in a single run.
-- Set up GitHub Actions workflows for container builds with security scanning and automated validation.
+• Wrote GitLab CI pipelines that orchestrate Terraform provisioning and Ansible configuration in a single run.
+• Set up GitHub Actions workflows for container builds with security scanning and automated validation.
 
 **Strong Linux administration and scripting skills**
-- Managed RHEL systems with STIG hardening and wrote Ansible roles for automated patching.
-- Built PowerShell tools using runspaces to scan 600+ machines in parallel for compliance checks.
+• Managed RHEL systems with STIG hardening and wrote Ansible roles for automated patching.
+• Built PowerShell tools using runspaces to scan 600+ machines in parallel for compliance checks.
 
 Happy to go into more detail on any of the above. Thanks for your time.
 
@@ -311,10 +318,10 @@ https://linkedin.com/in/alexjohnson-devops
 
 ## Tips
 
-1. **Extract requirements directly from the job posting** -- use their exact language as headers
-2. **One bullet can address multiple related requirements** -- group credentials like degree + certification + years of experience
-3. **Quantify accomplishments where possible** -- "97% reduction," "3 weeks to 2 days," "4 years"
-4. **Show context** -- don't just say you have a skill, show where/how you used it
-5. **Keep bullets concise** -- aim for ~20-30 words each (single sentence)
-6. **Order requirements by prominence** -- address their most important requirements first
-7. **Target 350-425 words total** -- ensures single-page fit
+1. **Extract requirements directly from the job posting** — use their exact language as headers
+2. **One bullet can address multiple related requirements** — group credentials like degree + certification + years of experience
+3. **Quantify accomplishments where possible** — "97% reduction," "3 weeks to 2 days," "4 years"
+4. **Show context** — don't just say you have a skill, show where/how you used it
+5. **Keep bullets concise** — aim for ~20-30 words each (single sentence)
+6. **Order requirements by prominence** — address their most important requirements first
+7. **Target 350-425 words total** — ensures single-page fit

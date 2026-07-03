@@ -1,0 +1,275 @@
+# Job Search Inclusions Configuration
+# This file defines what to search for across job hunt workflows.
+# Edit this file to add/remove/reorder job boards and roles.
+
+---
+
+# Job boards to search (in priority order)
+# The workflow searches these in sequence, top to bottom.
+#
+# Three-tier structure:
+#   primary   — boards with proven yield in the tracking window (≥1 qualified
+#               hit AND ≥1.5% qual rate over 30+ runs). ONE Firecrawl query
+#               per board per role tier — each board gets its own pool of N
+#               results. Earns 2 credits per query.
+#
+#   watch     — high-volume canonical ATS platforms (Workday, Ashby, Lever,
+#               Greenhouse, Rippling) that historically saturate Firecrawl's
+#               result pool but currently show 0 or marginal qualified hits
+#               in our window. Also gets ONE individual query each per role
+#               tier — bundling them with the low-volume edge tier would let
+#               them dominate the shared 50-result pool and starve the smaller
+#               boards. Watch-tier boards earn the same 2 credits per query
+#               as primary; the difference is purely a label for "we keep
+#               searching these because their inventory size justifies the
+#               cost, not because they're producing yet."
+#
+#   secondary — low-volume / unproven boards. ALL secondary boards are bundled
+#               into a single `(site:a OR site:b OR site:c)` query per role
+#               tier so they share one 2-credit pool. New additions land here
+#               and must earn their way into primary or watch by demonstrating
+#               yield. Per-board effectiveness is still tracked individually
+#               via URL-host attribution in the firecrawl-job-search agent.
+#
+# Promotion/demotion criteria (review every 30+ runs against
+# `results/tracking/data/ats_board_effectiveness.csv`):
+#   secondary → watch:    consistent inventory (avg ≥10 found across 10+ runs)
+#                         even if qualified is still zero. The volume justifies
+#                         pulling out of the bundle.
+#   secondary → primary:  ≥1 qualified hit AND ≥1.5% qual rate over 10+ runs.
+#   watch     → primary:  ≥1 qualified hit AND ≥1.5% qual rate over 30+ runs.
+#   primary   → watch:    60+ days of zero qualified despite continued volume.
+#   watch     → secondary: 60+ days of zero qualified AND inventory dropped
+#                         (avg <10 found per run) — bundle and stop wasting
+#                         a dedicated 2-credit slot.
+#   any       → removed:  90+ days of zero qualified AND zero found.
+job_boards:
+  primary:
+    # Proven yield in 13-run window (as of 2026-04-26):
+    #   icims.com         — 5 qual / 97 found / 5.2% rate
+    #   apply.workable.com — 3 qual / 67 found / 4.5% rate
+    #   recruiting.paylocity.com — 2 qual / 41 found / 4.9% rate
+    #   *.applytojob.com  — 2 qual / 124 found / 1.6% rate
+    - domain: icims.com
+      name: iCIMS
+      scrapable: true
+      notes: "URL pattern: careers-{company}.icims.com. Used by defense, healthcare, enterprise. Top performer in tracking window."
+
+    - domain: apply.workable.com
+      name: Workable
+      scrapable: true
+      notes: "Popular with mid-size companies and startups. Clean markdown output. Consistent qualified hits."
+
+    - domain: recruiting.paylocity.com
+      name: Paylocity
+      scrapable: true
+      notes: "Growing ATS platform. Clean parsing. Steady low-volume qualified hits."
+
+    - domain: "*.applytojob.com"
+      name: JazzHR
+      scrapable: true
+      notes: "Fetches fine per search results; my live test hit an expired listing (410), not a platform issue. High volume, low rate."
+
+  watch:
+    # Canonical high-volume ATS platforms — kept on individual queries because
+    # their inventory size would otherwise dominate a bundled pool and starve
+    # the secondary tier. Currently 0 or marginal qualified hits in our window
+    # but the volume justifies the per-query cost. Demote to secondary if
+    # inventory drops, or to removed if 90+ days of zero find.
+    - domain: jobs.ashbyhq.com
+      name: Ashby
+      scrapable: true
+      notes: "13-run window: 1 qual / 61 found / 1.6%. Verified scrapable. Watch tier — canonical platform, expect inventory turnover."
+
+    - domain: boards.greenhouse.io
+      name: Greenhouse
+      scrapable: true
+      notes: "13-run window: 0 qual / 55 found. Search works but individual jobs redirect to company sites. Watch tier — canonical platform."
+
+    - domain: jobs.lever.co
+      name: Lever
+      scrapable: true
+      notes: "13-run window: 0 qual / 64 found. Search works but may return 404 on direct access. Watch tier — canonical platform."
+
+    - domain: myworkdayjobs.com
+      name: Workday
+      scrapable: true
+      notes: "13-run window: 1 qual / 147 found / 0.7%. Highest-volume board — would dominate any bundled pool. Detail page scraping inconsistent (JS-heavy)."
+
+    - domain: ats.rippling.com
+      name: Rippling
+      scrapable: true
+      notes: "13-run window: 0 qual / 61 found. Fetched clean server-rendered HTML, structured list with UUIDs. Watch tier."
+
+  secondary:
+    # Bundled into a single Firecrawl query: (site:a OR site:b OR site:c)
+    # New additions land here and must earn promotion. Per-board attribution
+    # via URL-host matching keeps individual tracking intact.
+    - domain: jobs.jobvite.com
+      name: Jobvite
+      scrapable: true
+      notes: "13-run window: 0 qual / 11 found. Sparse hits — bundled to save credits. Demoted to secondary 2026-04-26."
+
+    # ⚠️ DO NOT RE-ADD jobs.smartrecruiters.com
+    # Removed 2026-05-22 after 250 found / 0 qualified across 39 queries
+    # (entire run window since 2026-04-26 addition). Inventory is real and
+    # Google-indexable, but the customer base skews heavily EMEA/APAC
+    # (Lisbon, Toulouse, Solna, KL, Timisoara, Belgrade, Warsaw, Crewe,
+    # Mexico, India) — structurally non-US, not a query-tuning problem.
+    # In the bundled-secondary group it was dominating the shared 100-slot
+    # pool and starving wellfound/jobvite/dayforce of result slots.
+    # If reconsidering: require a country-restricted query like
+    # `site:jobs.smartrecruiters.com inurl:US-` first, validate ≥1.5% US
+    # qualification rate over 10+ runs in isolation BEFORE re-bundling.
+
+    - domain: jobs.dayforcehcm.com
+      name: DayForceHCM
+      scrapable: true
+      notes: "Manually user-added."
+
+    - domain: "*.isolvedhire.com"
+      name: iSolvedHire
+      scrapable: true
+      notes: "Manually user-added."
+# Notes:
+# We Work Remotely appears to be shit. (fake jobs)
+# Wellfound is full of non-US spam
+---
+
+# Roles to search for (in priority order)
+# The workflow will search for these roles in sequence, top to bottom.
+# Each role is searched across all job boards before moving to the next role.
+# This allows you to prioritize DevOps over Cloud Engineer, etc.
+target_roles:
+  primary:
+    - name: DevOps Engineer        # #1 by every metric
+      priority: 1
+    - name: Platform Engineer      # strong app volume, some auto hits
+      priority: 2
+    - name: Site Reliability Engineer  # consistent apps, some auto hits
+      priority: 3
+    - name: Cloud Engineer         # decent manual app volume
+      priority: 4
+    - name: Infrastructure Engineer  # marginal, low auto but some manual apps
+      priority: 5
+
+  secondary:
+    # Tier 1 AI-adjacent roles (per .ai_references/ai_roles_research.md)
+    # These extend the DevOps/Platform stack to AI-flavored employers, including
+    # FedRAMP-authorized SaaS and federal-contractor MLOps where the candidate's
+    # GovCloud/STIG background is the headline differentiator.
+
+    - name: Cloud Administrator
+      priority: 6
+    - name: Cloud Operations
+      priority: 7
+    - name: Release Engineer
+      priority: 8
+
+  local_only:
+    # High-noise generalist IT titles that flood REMOTE searches with
+    # non-remote / non-matching results, but become viable when hunting
+    # LOCALLY (on-site/hybrid availability is the norm for them).
+    #   location.remote: true  -> these roles are SKIPPED entirely.
+    #   location.remote: false -> these roles ARE searched. In bundled-query
+    #                             workflows (Firecrawl ats-platform-search) they
+    #                             are grouped with the `secondary` role tier
+    #                             rather than getting their own dedicated slot.
+    # Goal: raise result volume for local job hunts without polluting remote ones.
+    - name: Systems Administrator
+      priority: 9
+    - name: Systems Engineer
+      priority: 10
+
+---
+
+# Search configuration
+search_config:
+  # Minimum qualified positions before stopping early
+  target_positions: 40
+
+  # Results per search query
+  search_limit: 100
+
+  # Unified time filter for ALL job search workflows.
+  # Options: "past_day" (24h) | "past_2_days" (48h) | "past_week" (7d) | "past_month" (30d)
+  # Applies to: ats-api-search, ats-platform-search, linkedin,
+  #             builtin, hiringcafe workflows.
+  #
+  # Per-platform handling of past_2_days:
+  #   - ATS API:           native (POSTED_WITHIN_DAYS["past_2_days"] = 2)
+  #   - LinkedIn:          f_TPR=r172800 (granular seconds, honored)
+  #   - Built In:          daysSinceUpdated=2 (honored — surfaces "2 Days Ago" cards)
+  #   - Hiring Cafe:       dateFetchedPastNDays=3 (padded for ~1d scrape lag)
+  #   - Firecrawl:         tbs=cdr:1,cd_min:...,cd_max:... via scripts/firecrawl_tbs.py
+  #                        (Google qdr: has no 2-day predefined bucket)
+  time_filter: "past_2_days"
+
+---
+
+# Workflow Statistics Tracking
+# These thresholds help identify when roles or criteria need adjustment
+statistics:
+  # If a role has a qualification rate below this threshold, flag it
+  min_qualification_rate: 0.05  # 5% - if <5% of found positions qualify, role may be unsuitable
+  
+  # If a job board has a qualification rate below this threshold, flag it
+  min_board_qualification_rate: 0.03  # 3% - if <3% qualify, board may not be worth searching
+  
+  # Track effectiveness per role for optimization recommendations
+  track_effectiveness: true
+
+---
+
+# Location / work-arrangement targeting.
+# Drives BOTH the deterministic Python filters (authoritative) and the
+# LLM/browser search + review prose (fuzzy catch).
+location:
+  # remote: true  -> search fully-remote US jobs (current behavior). `state` is
+  #                  the CANDIDATE'S RESIDENCE and drives the state-restriction
+  #                  eligibility check (replaces the old hard-coded Oregon logic).
+  # remote: false -> search local jobs in `city, state` (target metro). Hybrid /
+  #                  on-site roles are kept; fully-remote US roles are kept too
+  #                  unless accept_remote_in_local_mode is false.
+  remote: true
+  city: "Portland"              # required when remote=false; ignored when remote=true
+  state: "Oregon"        # residence (remote=true) OR target-metro state (remote=false)
+  state_abbr: "OR"      # 2-letter; postings list states both ways
+
+  # When remote=false, also keep fully-remote US jobs that appear in results.
+  accept_remote_in_local_mode: false
+
+  # Search radius around city/state — consulted ONLY when remote=false.
+  # ONE value, translated per-platform (each board names the param differently):
+  #   LinkedIn     -> &distance=<N>        (buckets: 0,5,10,25,50,75,100 mi — snaps to nearest)
+  #   Hiring Cafe  -> locations[].options.radius=<N>, radius_unit="miles", ignore_radius=false
+  #   Built In     -> NOT APPLICABLE. Built In is metro-hub based (~20 major tech
+  #                   cities), no radius model. Skipped in local mode when no hub exists.
+  # Verified live 2026-06-06 for Portland, OR.
+  distance_miles: 25
+
+  # Platform location codes — consulted ONLY when remote=false.
+  #   linkedin_geo_id   : OPTIONAL. LinkedIn resolves a free-text "city, state"
+  #                       location server-side (verified: returns metro-specific
+  #                       cards), so leave blank. Set only to force an exact metro
+  #                       geoId (guessing geoIds is unreliable) — look yours up via
+  #                       LinkedIn's geo typeahead.
+  #   builtin_city_slug : OPTIONAL. Defaults to "<city>-<state_abbr>" (e.g.
+  #                       austin-tx, verified live). Built In only covers ~20 major
+  #                       tech metros; if your target metro has NO hub, the slug
+  #                       falls back to nationwide US, so Built In is skipped in
+  #                       local mode. Set this only if your target metro IS a
+  #                       Built In hub.
+  geo_codes:
+    linkedin_geo_id: ""   # e.g. "102571732" for a city geoId. Free-text "City, State" also resolves.
+    builtin_city_slug: ""          # leave blank if your metro has no Built In hub
+
+  # --- Example: local Austin, TX search (set remote: false and copy these) ---
+  # remote: false
+  # city: "Austin"
+  # state: "Texas"
+  # state_abbr: "TX"
+  # distance_miles: 25
+  # geo_codes:
+  #   linkedin_geo_id: ""          # leave blank — free-text "Austin, Texas" works
+  #   builtin_city_slug: "austin-tx"  # (Austin IS a Built In hub — keep it)

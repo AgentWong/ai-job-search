@@ -4,19 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AI-assisted job search automation using GitHub Copilot workflows with Claude models. The system discovers, evaluates, and tracks cloud infrastructure engineering positions through structured workflows executed as prompt files.
-
-This is a showcase project demonstrating practical AI/LLM usage for job searching. All configuration files are working examples for a Cloud Infrastructure Engineer role -- customize them for your own target role.
+AI-assisted job search automation using Claude Code workflows. The system discovers, evaluates, and tracks cloud infrastructure engineering positions through structured workflows executed as command and agent files.
 
 ## Architecture: Orchestrator + Dedicated Agents
 
 All workflows use an **orchestrator + dedicated agent pattern** to prevent context degradation:
 
 ```
-Orchestrator (prompt file): Load configs → Build task queue → Track progress
+Orchestrator (.claude/commands/*.md): Load configs → Build task queue → Track progress
     ↓
 FOR EACH task:
-    Agent (agent file): Execute isolated task → Return structured JSON
+    Agent (.claude/agents/*.agent.md): Execute isolated task → Return structured JSON
     ↓
 Orchestrator: Aggregate results → Write outputs → Report
 ```
@@ -27,59 +25,101 @@ This pattern is critical because:
 - The orchestrator maintains state across many iterations
 - Agents are reusable across multiple orchestrator workflows
 
-### Agent Files (`.github/agents/`)
+### Agent Files (`.claude/agents/`)
 
 | Agent | Purpose | Used By |
 |-------|---------|---------|
-| `firecrawl-job-search.agent.md` | Search/scrape with Firecrawl, filter & score positions | ats-platform-search, company-monitoring |
-| `hiringcafe-job-search.agent.md` | Search Hiring Cafe, extract & score from search cards in single pass | hiringcafe-job-search |
-| `company-evaluator.agent.md` | Evaluate companies for monitoring inclusion | company-curation |
+| `ats-platform-review.agent.md` | Fuzzy LLM review of Python-staged Firecrawl platform-search candidates (scores from full markdown, fuzzy disqualification); returns qualified rows for the orchestrator to queue | ats-platform-search |
+| `browser-fetch.agent.md` | Fetch job detail pages, extract descriptions, score positions | hiringcafe-job-search |
+| `hiringcafe-job-search.agent.md` | Search Hiring Cafe, extract & score from search cards (Phase 1) | hiringcafe-job-search |
+| `ats-api-llm-review.agent.md` | Fuzzy LLM review of ATS-scraped candidates (catches title typos, unmapped non-US locations, subtle description signals); writes confirmed-qualified rows to application_queue.csv | ats-api-search |
+| `resume-tailoring.agent.md` | Generate tailored single-page resume for a job posting | tailor-resume, tailor-resume-full |
+| `resume-tailoring-2page.agent.md` | Generate tailored 2-page resume for a job posting | tailor-resume-full |
+| `cover-letter.agent.md` | Generate point-by-point cover letter | process-clippings |
+| `cover-letter-pitch.agent.md` | Generate 3-paragraph elevator pitch cover letter | process-clippings |
 
 ### Orchestrator-Agent Relationship
 
-Orchestrators (`.github/prompts/*.prompt.md`) handle:
+Orchestrators (`.claude/commands/*.md`) handle:
 - Loading configuration files
 - Building task queues
-- Invoking agents via `runSubagent(agent: "agent-name", prompt: "...")`
+- Invoking agents via `Agent(subagent_type: "agent-name", prompt: "...")`
 - Aggregating results and writing outputs
 
-Agents (`.github/agents/*.agent.md`) handle:
+Agents (`.claude/agents/*.agent.md`) handle:
 - Single isolated task execution
 - Tool usage (Firecrawl, Chrome DevTools)
 - Filtering and scoring logic
 - Returning structured JSON
 
-### Single-Phase Pattern (Hiring Cafe)
+### Hybrid Pattern (Hiring Cafe)
 
-Hiring Cafe uses a **single-phase agent** because full scoring data is available without visiting detail pages. Search cards display AI-parsed metadata (title, company, salary, YOE, tech tools, requirements summary). All scoring criteria visible on cards. URL-based filter state -- no UI interaction needed. No login required.
+Hiring Cafe uses a **two-phase approach** with an intermediate URL resolution step:
 
-## Workflow Prompts
+**Phase 1 (hiringcafe-job-search):** Search cards display AI-parsed metadata (title, company, salary, YOE, tech tools, requirements summary). Initial filter and score from card data. Returns Hiring Cafe viewjob URLs.
 
-Located in `.github/prompts/`:
+**URL Resolution (orchestrator):** Each Hiring Cafe viewjob page is visited to extract the outbound destination URL (ATS or company career page). The destination URL replaces the Hiring Cafe URL for all output.
 
-| Prompt | Purpose | Agent Used |
-|--------|---------|------------|
-| `ats-platform-search.prompt.md` | Search job boards (Greenhouse, Lever, etc.) | firecrawl-job-search |
-| `company-monitoring.prompt.md` | Monitor curated company career pages | firecrawl-job-search |
-| `company-curation.prompt.md` | Curate companies for direct monitoring | company-evaluator |
-| `hiringcafe-job-search.prompt.md` | Search Hiring Cafe with structured metadata | hiringcafe-job-search |
+**Phase 2 (browser-fetch):** Destination URLs are fetched to verify remote status and re-score from the full job description. Remote status confirmed against authoritative source to prevent false positives from Hiring Cafe's AI-parsed metadata.
 
-## Resume Tailoring
+## Workflow Commands
 
 Located in `.claude/commands/`:
 
-| Command | Purpose | Agents Used |
-|---------|---------|-------------|
-| `/tailor-resume` | Generate 1-page keyword-optimized resumes | resume-tailoring |
-| `/tailor-resume-full` | Generate 2-page resumes + cover letters | resume-tailoring-2page, cover-letter |
+| Command | Purpose | Agent Used |
+|---------|---------|------------|
+| `ats-platform-search` | Search ATS platforms (Greenhouse, Lever, etc.) | `scripts/ats_platform_search/cli.py` → ats-platform-review |
+| `hiringcafe-job-search` | Search Hiring Cafe with structured metadata | hiringcafe-job-search → browser-fetch |
+| `tailor-resume` | Generate a tailored resume for a single job posting | resume-tailoring |
+| `tailor-resume-full` | Batch-generate resumes for all clipped job postings | resume-tailoring, resume-tailoring-2page |
+| `process-clippings` | Process new job clippings and generate cover letters | cover-letter, cover-letter-pitch |
+
+### Script-Driven Workflows
+
+These workflows call Python scripts directly rather than using LLM-based agents, making them cheaper to run:
+
+| Command | Purpose | Script |
+|---------|---------|--------|
+| `ats-api-search` | Fetch jobs from ATS APIs for curated companies, filter, merge to queue | `scripts/ats_scraper/cli.py` |
+| `ats-api-test` | Development/testing loop for the ATS API scraper | `scripts/ats_scraper/cli.py` |
+| `linkedin-api-search` | Fetch jobs from LinkedIn's guest API, filter, score, stage for `linkedin-llm-review`, merge to queue | `scripts/linkedin_scraper/cli.py` |
+| `builtin-api-search` | Fetch jobs from Built In's public API, filter, score, stage for `builtin-llm-review`, merge to queue | `scripts/builtin_scraper/cli.py` |
+| `append-curation-results` | Merge the ATS Claude Desktop curation report into the target CSV | `scripts/curation_appender/cli.py` |
+| `data-analysis` | Monthly: aggregate effectiveness CSVs + applications log into a JSON report; LLM reads the small JSON and recommends `config.yml` actions | `scripts/data_analysis/cli.py` |
+
+The ATS API scraper hits public ATS APIs directly (Ashby, Greenhouse, Lever, SmartRecruiters, Rippling, Workday, Dayforce, iSolvedHire/ApplicantPro) for companies listed in `config/company_targets_ats.csv`. Initial filtering and regex-based scoring happen in Python (`scripts/ats_scraper/filters.py`, `scorer.py`); pre-filtered candidates are then staged to `results/ats_api_pending_review.json` for the `ats-api-llm-review` agent, which applies fuzzy disqualification using the full description and writes confirmed-qualified rows to `application_queue.csv`. Pass `--no-llm-review` to bypass the LLM step (legacy mode, regex-only). Supports `--posted-within past_day|past_week|past_month` for date filtering. Effectiveness tracking is written to `results/tracking/ats_api_effectiveness.md`.
+
+`ats-platform-search` follows the **same Python-stages → LLM-reviews shape** (see `docs/llm-deterministic-offload-strategy.md`). `scripts/ats_platform_search/cli.py` builds the query queue from `config/config.yml` (board tiers + role tiers + `location`), calls Firecrawl `/v2/search` directly with `scrapeOptions` preserved (identical ~2cr/10 credit cost), writes the raw response to `results/ats_platform_cache/q{NN}_raw.json` (it never enters an LLM context — this is the regression fix), refunds 1 credit per query via `/v2/search/{id}/feedback`, **backfills Workday descriptions** (Workday is a JS SPA, so Firecrawl scrapes only nav chrome — its sole `no_description` source; `scripts/ats_platform_filter/workday_enrich.py` reconstructs the public **CXS JSON detail API** URL from the result URL — `/{locale}/{board}/job/...` → `/wday/cxs/{tenant}/{board}/job/...` — and injects the fetched JD into `markdown` **before** filtering, so Workday items reach the review agent like any server-rendered board; no new search, no Firecrawl credits; conservative — a failed/thin fetch falls through to the `no_description` gate; disable with `--no-workday-enrich`), runs the regex pre-filter (`scripts/ats_platform_filter/filters.py` — senior/wrong-role/crypto titles, excluded companies, non-US via title **+ Workday `/job/<loc>/` URL segment + US-guarded snippet scan**, and a `listing_health` gate that drops dead/expired/un-rendered pages carrying no scoreable JD), and stages kept candidates (full markdown + deterministic board/role attribution) into a **single** `review_batch_<tier>_01.json` (default `--review-batch-size 0`) plus a small `search_summary_<tier>.json`. The orchestrator reads only the small summary, dispatches a **single** `ats-platform-review` subagent for the tier (it reads the scoring configs once — parallel-per-batch would re-read them per subagent, since subagent contexts don't share a cache), then writes qualified rows via `scripts/job_queue/cli.py`. A large pool can be split across parallel subagents with `--review-batch-size N` (N>0). Run a tier with `.venv/bin/python -m scripts.ats_platform_search.cli --tier primary|secondary [--time-window …]`.
+
+`ats-platform-validate` (the `/ats-platform-validate` command) is a reachability probe for candidate ATS/job-board domains discovered via Claude Desktop Research Mode (`claude_desktop/ats_platform_curation/`), run before a domain is added to `config.yml`. It uses the **same direct `/v2/search` API path** (no MCP server): `scripts/ats_platform_validate/cli.py` reads `claude_desktop/ats_platform_curation/candidates.yml`, drops candidates already covered by `config.yml` `job_boards` (wildcard-aware), searches each remaining domain (one `site:domain` query, primary roles only, hardcoded limit 10 / past month), refunds a credit per query, regex-filters for a qualified-count bonus signal, classifies a verdict (`PASS_STRONG`/`PASS_WEAK`/`MARGINAL`/`FAIL_EMPTY`/`FAIL_ERROR`), and writes the small `results/ats_platform_validation_cache/validation_summary.json` the orchestrator reads to compose the report. It does **not** write to `application_queue.csv`, update trackers, or modify `config.yml` — it emits a ready-to-paste `job_boards.secondary` stanza for the user to add manually. Run with `.venv/bin/python -m scripts.ats_platform_validate.cli [--time-window …]`. The legacy `firecrawl-job-search` MCP search subagent this replaced has been removed.
+
+**LLM-review rejection auditing:** The Python pre-filters log their rejections to `results/tracking/data/ats_api_company_rejections.csv`, but the four LLM review agents (`ats-api-llm-review`, `builtin-llm-review`, `linkedin-llm-review`, `ats-platform-review`) previously only printed their disqualifications into the session summary, so there was no durable record of which scoring-framework categories the *fuzzy* review was rejecting on. Each review agent now appends its `disqualified` array to `results/tracking/data/llm_rejections.csv` via `scripts/llm_rejections/cli.py` (one row per position: `date,source_agent,company,title,url,category,reason`). The CLI parses the cited `Category N` prefix out of each `disqualification_reason` into its own column (reasons without a citation — cooldown, score-threshold — bucket as `Uncited`), so you can audit which categories cost the most volume before deciding what to loosen: `.venv/bin/python -m scripts.llm_rejections.cli rollup [--since YYYY-MM-DD]`.
+
+The curation appender parses `.ai_references/company_curation_ats/report.md` (CSVs wrapped in triple-backtick codeblocks) and deduplicates against `config/company_targets_ats.csv` using case-insensitive `Company_Name` matching. The LLM never parses the CSV content itself — it only runs the script and relays the summary.
+
+After every real append, the script regenerates `config/company_targets_ats.json` — a lean companion file with only `name`, `company_url`, `career_page_url`, and `ats_platform`. This is what the user pastes into Claude Desktop research mode for duplicate detection, replacing the full CSV which bloats context with research notes. The CSV remains the source of truth; the JSON is a generated mirror. Regenerate manually via `.venv/bin/python -m scripts.curation_appender.rebuild_companion` if it drifts out of sync.
 
 ## Configuration Hierarchy
 
 ### Core Configuration (`config/`)
-- `inclusions.yml` - Job boards and target roles in priority order
+- `config.yml` - Job boards, target roles, search config, and the **`location`** block (formerly `inclusions.yml`)
 - `job_preferences.md` - Work arrangement, technical requirements, salary
+
+#### Location mode (`config.yml` → `location`)
+Every search workflow honors a single location toggle:
+- `remote: true` (default) — search fully-remote US jobs. `state`/`state_abbr` are the candidate's residence and drive the state-restriction eligibility check (replaces the formerly hard-coded "Oregon" logic).
+- `remote: false` — search local jobs in `city, state`. Hybrid/on-site are accepted; fully-remote US jobs are kept too unless `accept_remote_in_local_mode: false`.
+
+The deterministic gate lives in `scripts/ats_scraper/location.py` (`LocationConfig`, `location_verdict`, `location_matches_metro`), shared by all three Python scrapers; the LLM/browser agents read the same block as the fuzzy catch. Search-URL handling per platform: ATS filters post-fetch (no geo URL); LinkedIn uses a free-text `location` param; Built In keeps work-arrangement path segments (`/jobs/remote/hybrid/office`) and constrains the metro via `city`/`state` query params — a `<city>-<state_abbr>` path slug does NOT filter on Built In (it returns nationwide results). See the commented Austin example in `config.yml`.
+
+#### Role tiers (`config.yml` → `target_roles`)
+Three buckets, each entry keyed by `name` + `priority`:
+- `primary` / `secondary` — always searched. In the bundled Firecrawl workflow these drive query PHASE (primary queries run first; secondary only if the target is unmet).
+- `local_only` — high-noise generalist titles (e.g. Systems Administrator, Systems Engineer) that flood remote searches with non-remote / non-matching results. Searched **only** when `location.remote: false`; **skipped entirely** in remote mode. In bundled-query workflows they fold into the `secondary` OR-group (no extra Firecrawl credits / query slots) rather than getting a dedicated slot. The mode gate is `scripts/ats_scraper/roles.py` (`active_role_buckets`), shared by the per-role scrapers (ATS API, Built In, LinkedIn); the Firecrawl `query_builder.build_queue` applies the secondary-fold; the browser/LLM workflows read the same `location.remote` toggle. data_analysis classifies these as `keep_local_only` (never auto-promoted/removed).
 - `exclusions.yml` - Companies and patterns to skip
 - `cv_full.md` - Complete work history for resume generation
+- `company_targets_ats.csv` - Curated companies for ATS API scraper (platform, board token, career URL)
+- `company_targets_ats.json` - Lean companion (name, URLs, platform) for Claude Desktop dedup; regenerated from the CSV by `scripts/curation_appender/rebuild_companion.py`
 
 ### Shared Rules (`shared/`)
 - `scoring_framework.md` - Position scoring (0-10 scale) with boosters, penalties, and disqualifiers
@@ -92,38 +132,39 @@ Located in `.claude/commands/`:
 - `results/application_queue.csv` - Qualified positions (company, title, URL, score)
 
 ### Generated Resumes
-- `resumes/generated/tailored/` - Tailored DOCX resumes and cover letters
+`resumes/generated/<company>_<role_slug>_resume.md` - Tailored resumes for specific job postings
 
 ## Resume Generation Workflow
 
 The resume generation workflow uses a manual curation approach:
 1. Review `results/application_queue.csv` for promising job postings
-2. Save job posting markdown files to `config/target_jobs/`
-3. Run `/tailor-resume` or `/tailor-resume-full` command
-4. Each subagent produces a tailored DOCX resume optimizing for that specific posting's keywords
+2. Use the Obsidian clipper to extract clean markdown into `Clippings/`, then run `/process-clippings` to organize postings into `config/target_jobs/`
+3. Run `/tailor-resume` (single posting) or `/tailor-resume-full` (batch) which spawns isolated subagents per job posting
+4. Each subagent produces a tailored resume optimizing for that specific posting's keywords
 
 ## MCP Tools
 
 The workflows rely on MCP (Model Context Protocol) servers:
 
 1. **Firecrawl MCP** - Web scraping and search (`firecrawl_search`, `firecrawl_scrape`)
-   - Configured via `.mcp.json` (see `.mcp.json.example` for setup)
+   - Configured via VS Code settings or environment variables
    - Requires `FIRECRAWL_API_KEY`
-   - Used by: ats-platform-search, company-monitoring, company-curation
+   - Used by: ats-platform-search
 
 2. **Chrome DevTools MCP** - Browser automation for job boards requiring JavaScript
    - Requires Chrome running with remote debugging: `./scripts/start-chrome-debug.sh`
    - Connects to `http://127.0.0.1:9222`
-   - Used by: hiringcafe-job-search
+   - Used by: hiringcafe-job-search workflow
 
 ## Resume Generation Rules
 
 When modifying resume templates or generation logic:
 
 1. **Date format**: Use short month abbreviations only (`Jan`, `Sept`, not `January`, `September`)
-2. **Word count**: ~450 words for single page, ~900 words for 2-page
+2. **Word count**: Match reference resume (~450 words for single page)
 3. **Projects section**: Compact single-line format, no tables or URLs
-4. **Template structure**: Follow `resumes/reference/template.docx` formatting
+4. **No Summary section**: Omit to maximize space for achievements
+5. **Template structure**: Follow `resumes/reference/template.docx` formatting
 
 ## Scoring Quick Reference
 
