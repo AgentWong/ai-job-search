@@ -1,0 +1,6 @@
+company,title,url,source_track,discovered_date,quality_score,iac_tools,cloud_platform,remote_status,match_reasons,disqualifiers
+ExampleCorp,DevOps Engineer,https://example.com/jobs/1,linkedin(verified),2026-04-01,6,"Terraform, Ansible",AWS,Remote - US,"Terraform +2, Ansible +2",None
+Acme,Platform Engineer,https://acme.com/jobs/2,ats-platform,2026-04-02,7,Terraform,AWS,Remote - US,Terraform +2,None
+BetaCo,SRE,https://beta.com/jobs/3,hiringcafe,2026-04-03,5,Ansible,AWS,Remote - US,Ansible +2,None
+GammaLtd,Cloud Engineer,https://gamma.com/jobs/4,company_direct,2026-04-04,6,"Terraform, Ansible",AWS,Remote - US,"Terraform +2, Ansible +2",None
+DeltaInc,Systems Engineer,https://delta.com/jobs/5,builtin,2026-04-05,4,Terraform,AWS,Remote - US,Terraform +2,None

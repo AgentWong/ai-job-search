@@ -1,67 +1,76 @@
 # AI Job Search Automation
 
-AI-assisted job search automation using [GitHub Copilot](https://github.com/features/copilot) prompt files and Claude models. Discovers, evaluates, scores, and tracks job positions through structured agent workflows -- then generates tailored resumes and cover letters for the best matches.
+AI-assisted job search automation built on [Claude Code](https://claude.com/claude-code) slash commands and subagents. Discovers, filters, and scores cloud infrastructure engineering positions across ATS platforms and job boards, then generates tailored resumes and cover letters for the best matches.
 
 **This is not an auto-apply tool.** It automates the tedious parts of job searching (finding, filtering, scoring) so you can focus your time on applications worth submitting.
 
+**This is a public showcase repo.** All personal data — the candidate's real name, contact info, employers, and application history — has been replaced with a fictional "Alex Johnson" persona. See [Customizing for Your Own Job Search](#customizing-for-your-own-job-search) to adapt it.
+
 ## How It Works
 
-The system uses an **Orchestrator + Agent pattern** where prompt files coordinate isolated subagents for each task:
+The system uses an **orchestrator + dedicated agent pattern**, where slash commands (`.claude/commands/`) coordinate isolated subagents (`.claude/agents/`) for each task:
 
 ```
-Orchestrator (prompt file)
-├── Load configuration (roles, preferences, exclusions)
-├── Build task queue (which boards to search, which roles)
-├── FOR EACH task:
-│   └── Agent (agent file): Execute isolated search → Filter → Score → Return JSON
-├── Aggregate all results
-├── Deduplicate against existing queue
-└── Write results to CSV + report
+Orchestrator (.claude/commands/*.md): Load configs → Build task queue → Track progress
+    ↓
+FOR EACH task:
+    Agent (.claude/agents/*.agent.md): Execute isolated task → Return structured JSON
+    ↓
+Orchestrator: Aggregate results → Write outputs → Report
 ```
 
-**Why this pattern?** Job descriptions are token-heavy. A single search can return 25+ results with full descriptions. By delegating each search to an isolated subagent, the orchestrator maintains clean context across many iterations, and each agent gets fresh context for accurate analysis.
+**Why this pattern?** Job descriptions are token-heavy — a single search can return dozens of results with full descriptions. Delegating each search or generation task to an isolated subagent keeps the orchestrator's context clean across many iterations, and every agent gets fresh context for accurate analysis.
 
-### MCP Tools
+### Python-stages, LLM-reviews
 
-The workflows use [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers to interact with external services:
-
-- **[Firecrawl MCP](https://github.com/firecrawl/firecrawl-mcp-server)** -- Web search and scraping for ATS platforms (Greenhouse, Lever, Ashby, etc.)
-- **[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)** -- Browser automation for JavaScript-heavy job boards (Hiring Cafe)
+Where possible, deterministic work (pagination, regex filtering, scoring math, CSV I/O) runs in Python scripts instead of an LLM context. The LLM is reserved for judgment calls: fuzzy disqualification against the scoring framework, matching resume content to a job posting, writing prose. This keeps the token-heavy steps cheap and the model-driven steps focused. See [docs/llm-deterministic-offload-strategy.md](docs/llm-deterministic-offload-strategy.md) for the pattern written up in the abstract.
 
 ## Included Workflows
 
 ### Job Discovery
 
-| Workflow | What It Does | MCP Tool | Docs |
-|----------|-------------|----------|------|
-| `/ats-platform-search` | Search ATS platforms (Greenhouse, Lever, Ashby, Workday, etc.) for open positions | Firecrawl | [Guide](docs/ats-platform-search.md) |
-| `/hiringcafe-job-search` | Search [Hiring Cafe](https://hiring.cafe) using its AI-enriched metadata cards | Chrome DevTools | [Guide](docs/hiringcafe-job-search.md) |
-| `/company-monitoring` | Monitor a curated list of company career pages for new openings | Firecrawl | [Guide](docs/company-monitoring.md) |
-| `/company-curation` | Discover and validate new companies to add to the monitoring list | Firecrawl | [Guide](docs/company-curation.md) |
+| Command | What It Does | Backing |
+|---------|--------------|---------|
+| `/ats-platform-search` | Search ATS platforms (Greenhouse, Lever, Ashby, Workday, etc.) for open positions via Firecrawl | `scripts/ats_platform_search/` → `ats-platform-review` agent |
+| `/ats-platform-validate` | Reachability probe for candidate ATS/job-board domains before adding them to `config.yml` | `scripts/ats_platform_validate/` |
+| `/ats-api-search` | Fetch jobs directly from curated companies' public ATS APIs (Ashby, Greenhouse, Lever, SmartRecruiters, Rippling, Workday, Dayforce, iSolvedHire) | `scripts/ats_scraper/` → `ats-api-llm-review` agent |
+| `/linkedin-api-search` | Fetch jobs from LinkedIn's public guest API | `scripts/linkedin_scraper/` → `linkedin-llm-review` agent |
+| `/builtin-api-search` | Fetch jobs from Built In's public API | `scripts/builtin_scraper/` → `builtin-llm-review` agent |
+| `/hiringcafe-job-search` | Search [Hiring Cafe](https://hiring.cafe) using its AI-enriched metadata cards, then resolve outbound ATS/company URLs via browser automation | `hiringcafe-job-search` agent → `browser-fetch` agent |
 
-### Resume Tailoring
+The script-driven workflows (`ats-api-search`, `linkedin-api-search`, `builtin-api-search`) hit public job-board APIs directly — no scraping credits spent on search. Python does the pagination, regex pre-filtering, and scoring; a single LLM review pass then applies fuzzy judgment (title typos, non-US locations Python's regex missed, subtle disqualifiers in the full description) before qualified rows are written to `results/application_queue.csv`.
 
-| Command | What It Does | Docs |
-|---------|-------------|------|
-| `/tailor-resume` | Generate a 1-page keyword-optimized DOCX resume for each job in `config/target_jobs/` | [Guide](docs/resume-tailoring.md) |
-| `/tailor-resume-full` | Generate a 2-page resume + cover letter for each job in `config/target_jobs/` | [Guide](docs/resume-tailoring.md) |
+### Resume & Cover Letter Generation
 
-Resume tailoring uses your `config/cv_full.md` as the source of truth. The agent extracts keywords from the job posting, matches them to your actual experience, and generates a DOCX file using your template. **No fabrication** -- if a skill isn't in your CV, it won't appear on the resume. For resumes that sound like you wrote them (not like ChatGPT wrote them), populate `docs/writing_style_guide.md` with samples of your actual writing.
+| Command | What It Does |
+|---------|--------------|
+| `/tailor-resume` | Generate a 1-page keyword-optimized resume + 3-paragraph pitch cover letter for each job posting in `config/target_jobs/` |
+| `/tailor-resume-full` | Generate a 2-page resume + point-by-point cover letter + LinkedIn outreach message for each job posting |
+| `/process-clippings` | Process new job postings clipped into `Clippings/` and organize them into `config/target_jobs/` |
+
+Resume tailoring uses `config/cv_full.md` as the sole source of truth. Agents extract keywords from the job posting, match them against verified CV content, and generate a DOCX resume — **no fabrication**: if a skill isn't in your CV, it won't appear on the resume. Populate `.claude/skills/writing-style/SKILL.md` with samples of your own writing so generated resumes and cover letters sound like you, not like an LLM.
+
+### Maintenance
+
+| Command | What It Does |
+|---------|--------------|
+| `/data-analysis` | Monthly: aggregate effectiveness tracking + application history into a report; recommends `config.yml` tuning |
 
 ## Quick Start
 
 ### Prerequisites
 
-- [VS Code](https://code.visualstudio.com/) with [GitHub Copilot](https://github.com/features/copilot) (Claude model access)
-- [Node.js](https://nodejs.org/) (for MCP servers via `npx`)
-- Python 3.x with venv (for DOCX generation)
-- Google Chrome (for Hiring Cafe workflow only)
+- [Claude Code](https://claude.com/claude-code) (VS Code extension, desktop app, or CLI)
+- Python 3.x with venv (scrapers, filters, and DOCX generation)
+- Node.js (for MCP servers via `npx`)
+- Google Chrome (only for the `/hiringcafe-job-search` workflow)
+- A [Firecrawl](https://www.firecrawl.dev/) API key (only for `/ats-platform-search` and `/ats-platform-validate`)
 
 ### Setup
 
 1. **Clone the repo:**
    ```bash
-   git clone https://github.com/AgentWong/ai-job-search
+   git clone https://github.com/your-username/ai-job-search
    cd ai-job-search
    ```
 
@@ -72,74 +81,67 @@ Resume tailoring uses your `config/cv_full.md` as the source of truth. The agent
    ```
 
 3. **Configure MCP servers:**
-
-   Copy the example config for Chrome DevTools:
    ```bash
    cp .mcp.json.example .mcp.json
    ```
+   Edit `.mcp.json` and set `FIRECRAWL_API_KEY` to your own key (only needed for the ATS platform search/validate workflows). Don't commit `.mcp.json` — it's gitignored.
 
-   Install the **Firecrawl MCP Server** from the [VS Code Extensions Marketplace](https://marketplace.visualstudio.com/items?itemName=nicepkg.firecrawl-mcp) (filter by "MCP Servers"). The extension prompts you for your API key and stores it securely outside the repo -- this avoids accidentally committing secrets to git. Get a Firecrawl API key at [firecrawl.dev](https://www.firecrawl.dev/).
-
-4. **For browser workflows (Hiring Cafe), start Chrome:**
+4. **For the Hiring Cafe workflow, start Chrome with remote debugging:**
    ```bash
    ./scripts/start-chrome-debug.sh
    ```
 
-5. **Customize for your job search** (see below).
+5. **Customize for your own job search** (see below).
 
-### Customizing for Your Job Search
+### Customizing for Your Own Job Search
 
-All configuration is in the `config/` directory. The included files are working examples for a Cloud Infrastructure Engineer role.
+All configuration is in `config/`. The included files are a working example for a mid-level Cloud/DevOps Engineer search under a fictional "Alex Johnson" persona — replace them with your own.
 
 | File | What to Change |
-|------|---------------|
+|------|-----------------|
 | `config/cv_full.md` | Replace with your complete work history |
+| `config/linkedin_profile.md` | Replace with your LinkedIn profile content (used for outreach message generation) |
 | `config/job_preferences.md` | Set your remote/salary/industry/experience preferences |
-| `config/inclusions.yml` | Define which ATS boards to search and which role titles to look for |
-| `config/exclusions.yml` | Add companies you've already applied to or want to skip |
-| `config/company_targets.csv` | Curate companies you want to monitor directly |
-| `docs/writing_style_guide.md` | Add samples of your own writing so AI-generated resumes sound like you (see [guide](docs/writing_style_guide.md)) |
+| `config/config.yml` | Job boards, target role tiers, and the `location` block (remote vs. local search, your residence state for eligibility checks) |
+| `config/exclusions.yml` | Companies you've already applied to, been rejected by, or want to skip |
+| `config/company_targets_ats.csv` | Curate companies for the ATS API scraper to monitor directly (regenerate `company_targets_ats.json` after editing, via `scripts/curation_appender/rebuild_companion.py`) |
+| `.claude/skills/writing-style/SKILL.md` | Add samples of your own writing so AI-generated resumes and cover letters sound like you |
 
-The `shared/` directory contains scoring rules that reference your preferences:
+The `shared/` directory contains scoring rules referenced by every review agent:
 
 | File | What to Change |
-|------|---------------|
-| `shared/scoring_framework.md` | Adjust score boosters/penalties for your tech stack |
+|------|-----------------|
+| `shared/scoring_framework.md` | Score boosters/penalties/disqualifiers for your tech stack |
 | `shared/technical_requirements.md` | Update to match your technical background |
-| `shared/company_evaluation_rules.md` | Adjust company size/industry filters |
+| `shared/company_evaluation_rules.md` | Company size/industry/business-model filters |
 
 ## Repository Structure
 
 ```
 ai-job-search/
-├── .github/
-│   ├── prompts/          # Orchestrator workflows (run these)
-│   └── agents/           # Reusable subagents (called by orchestrators)
 ├── .claude/
-│   ├── commands/         # Slash commands (/tailor-resume, /tailor-resume-full)
-│   └── agents/           # Resume tailoring subagents
+│   ├── commands/         # Slash commands (orchestrators)
+│   ├── agents/           # Subagents (isolated task execution)
+│   └── skills/           # writing-style: your voice, for resume/cover-letter prose
 ├── config/
-│   ├── cv_full.md        # Your complete work history
-│   ├── job_preferences.md # Search criteria and preferences
-│   ├── inclusions.yml    # Job boards and target roles
-│   ├── exclusions.yml    # Companies to skip
-│   ├── company_targets.csv # Companies to monitor
-│   └── target_jobs/      # Job postings for resume tailoring
+│   ├── cv_full.md            # Complete work history (source of truth)
+│   ├── linkedin_profile.md   # LinkedIn profile content
+│   ├── job_preferences.md    # Search criteria and preferences
+│   ├── config.yml            # Job boards, target roles, location targeting
+│   ├── exclusions.yml        # Companies to skip
+│   ├── company_targets_ats.csv/.json  # Curated companies for the ATS API scraper
+│   └── target_jobs/          # Job postings staged for resume tailoring
 ├── shared/
-│   ├── scoring_framework.md      # Position scoring rules
-│   ├── company_evaluation_rules.md # Company filtering rules
-│   └── technical_requirements.md   # Technical matching criteria
-├── scripts/
-│   ├── start-chrome-debug.sh     # Chrome setup for browser workflows
-│   └── docx_generator/           # Python DOCX generation scripts - 1-page resume
-│   └── docx_generator_v2/        # Python DOCX generation scripts - 2-page resume
+│   ├── scoring_framework.md         # Position scoring rules
+│   ├── company_evaluation_rules.md  # Company filtering rules
+│   └── technical_requirements.md    # Technical matching criteria
+├── scripts/               # Scrapers, filters, scorers, DOCX generators (Python)
 ├── resumes/
-│   ├── reference/        # DOCX templates
-│   └── generated/tailored/ # Output: generated resumes
-├── results/
-│   └── application_queue.csv # Output: qualified positions
-└── docs/                 # Additional documentation
-    └── writing_style_guide.md  # Template for your writing voice
+│   ├── reference/         # DOCX templates
+│   └── generated/         # Output: tailored resumes/cover letters
+├── results/               # Output: application_queue.csv
+├── tests/                 # Unit tests for the deterministic Python layer
+└── docs/                  # Workflow guides and design notes
 ```
 
 ## Scoring System
@@ -147,62 +149,38 @@ ai-job-search/
 Positions are scored on a 0-10 scale:
 
 | Score | Classification | Action |
-|-------|----------------|--------|
+|-------|-----------------|--------|
 | 8-10 | Exceptional | Apply immediately |
 | 6-7 | Strong | Apply |
 | 4-5 | Moderate | Manual review |
 | 0-3 | Disqualified | Skip |
 
-The scoring considers:
-- **Boosters:** Terraform (+2), Ansible (+2), AWS-focused (+2), education flexibility (+1)
-- **Penalties:** Azure-primary (-1), travel requirements (-2), large company (-1)
-- **Disqualifiers:** Senior/Staff/Lead titles, GCP-only, non-remote, crypto/blockchain, "software development experience" requirements
+Key boosters: Terraform (+2), Ansible (+2), AWS-focused (+2)
+Key disqualifiers: Senior/Staff/Lead titles, GCP-only, non-remote, 24/7 on-call, Crypto/Blockchain/Web3, AI startups (<10K employees), "software development experience" requirements
 
-All scoring logic is in `shared/scoring_framework.md` -- customize it for your own tech stack and preferences.
+All scoring logic lives in `shared/scoring_framework.md` — customize it for your own tech stack and preferences.
 
 ## Documentation
 
-Detailed guides for each workflow are in the [`docs/`](docs/) directory:
-
-- [ATS Platform Search](docs/ats-platform-search.md) -- Search parameters, credit usage, and tuning tips
-- [Hiring Cafe Job Search](docs/hiringcafe-job-search.md) -- Chrome setup, single-phase agent, filter customization
-- [Company Monitoring](docs/company-monitoring.md) -- Run cadence, evaluation rules, validation reports
-- [Company Curation](docs/company-curation.md) -- Building and managing your target company list
-- [Company Targets Maintenance](docs/company_targets_maintenance.md) -- CSV format, exclusions, monthly audit process
-- [Resume Tailoring](docs/resume-tailoring.md) -- End-to-end workflow from job clipping to PDF submission
-
-## Pricing
-
-This project uses paid services. Here's what I use and what it costs:
-
-| Service | Plan | Cost | Required? |
-|---------|------|------|-----------|
-| [GitHub Copilot](https://github.com/features/copilot) | Pro | $10/month | Yes |
-| [Anthropic Claude](https://claude.com/pricing) | Pro | ~$17/month (billed yearly at $200) | No |
-| [Firecrawl](https://www.firecrawl.dev/pricing) | Hobby | $19/month + ~$18/month in credit recharges | No |
-
-**GitHub Copilot** is the bare minimum. Its request-based pricing model is well-suited for agentic workflows where a single orchestrator run can spawn many subagent calls. I use Claude Sonnet 4.6 within Copilot for the most predictable results -- ChatGPT and Gemini can produce unexpected output in these workflows. Other AI models are not thoroughly tested.
-
-**Claude Pro** is optional but generally useful. I use it for Claude Code (VS Code integration), which powers the resume tailoring slash commands. Having both Copilot and Claude gives flexibility across pricing models -- Copilot uses request-based limits while Claude uses token-based usage limits. If you skip Claude Pro, the resume tailoring commands (currently in `.claude/commands/`) would need to be migrated into `.github/prompts/` and adjusted for Copilot's agent system.
-
-**Firecrawl** is the most expensive component. The Hobby plan ($19/month) includes credits, but I typically recharge twice a month at $9 each (limit of 4 recharges/month), bringing the real cost closer to $37/month. I only use Firecrawl for job searching, so I can cancel anytime between job search campaigns. Firecrawl is **not an absolute requirement** -- alternatives include using Google Search directly through a Chrome DevTools MCP browser session, or a Google Search MCP server depending on search volume. I personally find Firecrawl's LLM-friendly markdown output worth the cost.
+- [Resume Tailoring Workflow](docs/workflow-resume-tailoring.md) — end-to-end flow, agent responsibilities, output format
+- [ATS Platform Search Workflow](docs/workflow-ats-platform-search.md) — search flow, credit usage, tuning
+- [LLM-Deterministic Offload Strategy](docs/llm-deterministic-offload-strategy.md) — the Python-stages/LLM-reviews pattern in the abstract
+- [Pipeline Events Guide](docs/pipeline-events-guide.md) — tracking application status by hand after you apply
 
 ## Responsible Use
 
 This project automates job *discovery*, not job *applications*. Please:
 
 - Respect the terms of service of any platform you interact with
-- Use reasonable rate limits and don't hammer job board APIs
-- Review all generated resumes before submitting -- AI output needs human review
-- This project does not include workflows for platforms that prohibit automated access
-
-**LinkedIn, Indeed, and Glassdoor:** These platforms have terms of service that restrict or prohibit automated access and scraping. I do not endorse using this project against their websites. My workflows use negative search operators (e.g., `-site:linkedin.com`) specifically because their anti-scraping measures produce non-scrapable results that waste Firecrawl API credits.
+- Use reasonable rate limits — don't hammer job board APIs
+- Review every generated resume and cover letter before submitting; AI output needs human review
+- This project does not include workflows for platforms that prohibit automated access (e.g. LinkedIn's authenticated site, Indeed, Glassdoor). The LinkedIn workflow here uses only LinkedIn's public, unauthenticated guest API.
 
 ## Disclaimers
 
-**Target audience:** This project was built by a mid-level IT professional (my last role was as a remote DevOps Engineer). It assumes comfort with the command line, scripting, YAML configuration, and AI tooling. It may not be suitable for recent graduates, entry-level IT users who aren't comfortable with automation, or non-technical users.
+**Target audience:** Built for a mid-level infrastructure/DevOps job search. It assumes comfort with the command line, scripting, YAML configuration, and AI tooling.
 
-**Platform support:** This project has only been tested on macOS. I do not have a Windows machine to test with. Windows users may need to install Python and Node.js manually, and shell scripts (`.sh`) may require WSL or Git Bash. Linux should work with minimal adjustments.
+**Platform support:** Developed and tested on Linux. macOS should work with minimal adjustments. Windows users may need WSL or Git Bash for the shell scripts.
 
 ## License
 

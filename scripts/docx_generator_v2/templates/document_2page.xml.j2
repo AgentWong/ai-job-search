@@ -14,7 +14,7 @@
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:cs="Arial"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
             <w:sz w:val="36"/><w:szCs w:val="36"/>
         </w:rPr>
     </w:pPr>
@@ -22,7 +22,7 @@
         <w:rPr>
             <w:rFonts w:cs="Arial" w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
             <w:sz w:val="36"/><w:szCs w:val="36"/>
         </w:rPr>
         <w:t>{{ name }}</w:t>
@@ -55,16 +55,15 @@
 </w:p>
 {% endfor %}
 
-{# Spacer with border before sections #}
+{# Spacer before first section (rule removed — section header carries its own bottom rule) #}
 <w:p>
     <w:pPr>
         <w:pStyle w:val="Normal"/>
-        <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
         <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="80"/>
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
     </w:pPr>
     <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
@@ -79,7 +78,7 @@
 <w:p>
     <w:pPr>
         <w:pStyle w:val="Normal"/>
-        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="120"/>
+        <w:spacing w:lineRule="auto" w:line="276" w:before="0" w:after="120"/>
         <w:jc w:val="both"/>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
     </w:pPr>
@@ -101,39 +100,6 @@
 {% endif %}
 
 {# ============================================================ #}
-{# SKILLS SECTION - MOVED ABOVE EXPERIENCE for 2-page           #}
-{# ============================================================ #}
-{{ section_header("SKILLS") }}
-
-{% for skill in technical_expertise %}
-<w:p>
-    <w:pPr>
-        <w:pStyle w:val="Normal"/>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
-        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-    </w:pPr>
-    <w:r>
-        <w:rPr><w:b/><w:bCs/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t>{{ skill.category }}</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t xml:space="preserve"> &#8211; {{ skill.technologies }}</w:t>
-    </w:r>
-</w:p>
-{% endfor %}
-
-{# Empty spacer #}
-<w:p>
-    <w:pPr>
-        <w:pStyle w:val="Normal"/>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
-        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-    </w:pPr>
-    <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
-</w:p>
-
-{# ============================================================ #}
 {# EXPERIENCE SECTION - ALL ROLES GET BULLETS                   #}
 {# ============================================================ #}
 {{ section_header("EXPERIENCE") }}
@@ -151,17 +117,18 @@
 </w:p>
 
 {% for exp in experience %}
-{# Experience header: Company - Location - Role [TAB] Dates #}
+{# Experience header: Company - Location - Role [TAB] Dates
+   10pt space-before on non-first roles so each job visibly separates from the previous. #}
 <w:p>
     <w:pPr>
         <w:pStyle w:val="Normal"/>
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="{{ '0' if loop.first else '200' }}" w:after="0"/>
         <w:jc w:val="both"/>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
     </w:pPr>
     <w:r>
@@ -169,27 +136,27 @@
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ exp.company }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ exp.location }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t>{{ exp.role }}</w:t>
         <w:tab/>
@@ -198,19 +165,20 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t>{{ exp.dates }}</w:t>
     </w:r>
 </w:p>
 
-{# Bullet points for this experience - ALL roles now have bullets #}
+{# Bullet points for this experience - ALL roles now have bullets.
+   Line height 264 (~1.10×) for easier reading inside wrapped bullets. #}
 {% for bullet in exp.bullets %}
 <w:p>
     <w:pPr>
         <w:pStyle w:val="ListParagraph"/>
         <w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>
-        <w:spacing w:lineRule="auto" w:line="216" w:before="0" w:after="80"/>
+        <w:spacing w:lineRule="auto" w:line="264" w:before="0" w:after="80"/>
         <w:ind w:hanging="187" w:start="187" w:end="0"/>
         <w:contextualSpacing/>
         <w:rPr>
@@ -221,18 +189,32 @@
             <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
     </w:pPr>
+    {% for run in bullet|parse_runs %}
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
-            <w:b w:val="false"/><w:bCs w:val="false"/>
+            {% if run.bold %}<w:b/><w:bCs/>{% else %}<w:b w:val="false"/><w:bCs w:val="false"/>{% endif %}
             <w:i w:val="false"/><w:iCs w:val="false"/>
             <w:color w:val="000000"/>
             <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
-        <w:t>{{ bullet }}</w:t>
+        <w:t xml:space="preserve">{{ run.text }}</w:t>
     </w:r>
+    {% endfor %}
 </w:p>
 {% endfor %}
+
+{# Legacy inter-entry spacer reduced — role header w:before now carries the gap. #}
+{% if not loop.last %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr></w:r>
+</w:p>
+{% endif %}
 {% endfor %}
 
 {# Empty spacer before next section #}
@@ -242,9 +224,9 @@
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
         <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
         <w:jc w:val="both"/>
-        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr>
     </w:pPr>
-    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr></w:r>
 </w:p>
 
 {# ============================================================ #}
@@ -272,21 +254,27 @@
         <w:t>{{ proj.date }}</w:t>
     </w:r>
 </w:p>
-{# Bullet points for this project - supports multiple bullets #}
+{# Bullet points for this project - supports multiple bullets.
+   Line height 264 (~1.10×) matches experience bullets. #}
 {% for bullet in proj.bullets %}
 <w:p>
     <w:pPr>
         <w:pStyle w:val="ListParagraph"/>
         <w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="{{ '60' if loop.last else '0' }}"/>
+        <w:spacing w:lineRule="auto" w:line="264" w:before="0" w:after="{{ '60' if loop.last else '0' }}"/>
         <w:ind w:hanging="187" w:start="187" w:end="0"/>
         <w:contextualSpacing/>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
     </w:pPr>
+    {% for run in bullet|parse_runs %}
     <w:r>
-        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t>{{ bullet }}</w:t>
+        <w:rPr>
+            {% if run.bold %}<w:b/><w:bCs/>{% endif %}
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ run.text }}</w:t>
     </w:r>
+    {% endfor %}
 </w:p>
 {% endfor %}
 {% endfor %}
@@ -298,9 +286,42 @@
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
         <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
         <w:jc w:val="both"/>
-        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr>
     </w:pPr>
-    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr></w:r>
+</w:p>
+
+{# ============================================================ #}
+{# SKILLS SECTION - BELOW PROJECTS for 2-page                   #}
+{# ============================================================ #}
+{{ section_header("SKILLS") }}
+
+{% for skill in technical_expertise %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="40"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:b/><w:bCs/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t>{{ skill.category }}</w:t>
+    </w:r>
+    <w:r>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+        <w:t xml:space="preserve">: {{ skill.technologies }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# Empty spacer #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
+    </w:pPr>
+    <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
 </w:p>
 
 {# ============================================================ #}
@@ -313,7 +334,7 @@
     <w:pPr>
         <w:pStyle w:val="Normal"/>
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="40"/>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
     </w:pPr>
     <w:r>
@@ -322,7 +343,7 @@
     </w:r>
     <w:r>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t xml:space="preserve"> &#8211; {{ cert.name }}</w:t>
+        <w:t xml:space="preserve">: {{ cert.name }}</w:t>
         <w:tab/>
         <w:t>{{ cert.date }}</w:t>
     </w:r>
@@ -355,7 +376,8 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
     </w:pPr>
     <w:r>
@@ -363,37 +385,41 @@
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.institution }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.location }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.degree }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
         <w:t> {{ edu.field }}</w:t>
         <w:tab/>
@@ -402,7 +428,8 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
         <w:t>{{ edu.date }}</w:t>
     </w:r>

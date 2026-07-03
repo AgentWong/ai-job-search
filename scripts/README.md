@@ -1,6 +1,8 @@
-# Browser Automation Scripts
+# LinkedIn Automation Scripts
 
-This directory contains helper scripts for browser-based job search automation using the chrome-devtools MCP server.
+This directory contains helper scripts for LinkedIn job search automation using the chrome-devtools MCP server.
+
+> **Note:** The LinkedIn browser workflow this guide was written for has been retired and replaced by the script-driven `/linkedin-api-search` (public guest API — no browser, no login). The Chrome remote-debugging setup below is still used by `/hiringcafe-job-search`, the only remaining browser-driven workflow.
 
 ## Quick Start
 
@@ -13,31 +15,42 @@ Run the startup script:
 
 This will:
 - Launch Chrome with remote debugging on port 9222
-- Use a dedicated profile at `~/.chrome-job-hunt-automation`
-- Keep your automation browser separate from your main Chrome profile
+- Use a dedicated profile at `~/.chrome-linkedin-automation`
+- Preserve your LinkedIn login session across restarts
 
-### Step 2: Run a Browser Workflow
+### Step 2: Log Into LinkedIn
 
-In VS Code with GitHub Copilot (Claude model):
-1. Open a workflow prompt (e.g., `.github/prompts/hiringcafe-job-search.prompt.md`)
-2. Run the prompt
-3. The AI agent will use Chrome DevTools MCP to interact with the browser
+In the Chrome window that just opened:
+1. Navigate to https://www.linkedin.com
+2. Log in with your credentials
+3. Leave this window open
 
-## DOCX Generators
+### Step 3: Run the LinkedIn Test
 
-The `docx_generator_v2/` directory contains Python scripts for generating Word documents:
+In VS Code with Claude Code or Claude Desktop:
+1. Open the prompt: `.github/prompts/linkedin-test-exploration.prompt.md`
+2. Run the prompt with Claude
+3. Claude will use the chrome-devtools MCP to interact with your logged-in browser
 
-- `generate_resume_2page.py` - Generate a 2-page resume from JSON content
-- `generate_cover_letter.py` - Generate a cover letter from JSON content
+## What the Test Does
 
-These are invoked automatically by the resume tailoring workflows.
+The test prompt will:
+1. Connect to your Chrome browser via the debugging port
+2. Navigate to LinkedIn Jobs
+3. Execute a test search for "devops engineer"
+4. Try to apply various filters (date, experience level, remote, salary)
+5. Extract job listings to understand the DOM structure
+6. Take screenshots at each step
+7. Document what works and what doesn't
 
-### Prerequisites
+## Expected Outcomes
 
-```bash
-python -m venv .venv
-.venv/bin/pip install -r requirements.txt
-```
+After running the test, you should have:
+- Screenshots of LinkedIn's interface at various stages
+- Documentation of CSS selectors that work for extracting job data
+- Understanding of URL parameters for filters
+- Knowledge of timing requirements (how long to wait between actions)
+- List of any limitations or challenges with automation
 
 ## Troubleshooting
 
@@ -46,9 +59,22 @@ python -m venv .venv
 - Check that port 9222 is not blocked
 - Verify no other Chrome instance is using that port
 
+### "Not logged into LinkedIn"
+- Log in manually in the debug Chrome window
+- The session will persist in the dedicated profile
+
 ### "Selectors not found"
-- The target website's UI may have changed
-- The agent prompts include fallback strategies for handling UI changes
+- LinkedIn's UI may have changed
+- The test prompt includes multiple fallback selectors
+- Document which selectors work for future reference
+
+## Next Steps
+
+After successful testing:
+1. Review the test results and screenshots
+2. Build a production workflow under `.claude/commands/`
+3. Add LinkedIn configuration to `config/config.yml`
+4. Build job extraction and scoring logic
 
 ## Security Notes
 

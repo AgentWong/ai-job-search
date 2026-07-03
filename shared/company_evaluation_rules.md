@@ -28,9 +28,13 @@ Companies with the following business models should be **automatically excluded*
 | Size Category | Employee Count | Exclusion Reason |
 |---------------|----------------|------------------|
 | **Too Small** | < 50 employees | May lack dedicated infrastructure teams, limited resources, "wear many hats" expectations |
-| **Too Large** | > 10,000 employees | Bureaucratic processes, limited individual impact, slow decision-making |
+| **Too Large** | > 25,000 employees | Bureaucratic processes, limited individual impact, slow decision-making |
 
 **Preferred Range:** 100-2,000 employees (mid-size with specialized teams)
+
+**Note on the 10,000-25,000 band:** Companies in this range are **not excluded** — apply a `-1` scoring penalty instead (see Scoring Framework). The size cap exists to filter bureaucratic mega-corps, but large mature companies are well-resourced, have dedicated infrastructure teams, and are the *opposite* of the overwork risk that small startups carry. Scale itself is not the concern; bureaucracy is. The hard cap moves to >25,000.
+
+**Federal-contractor exemption to the size cap:** Established federal/government IT contractors (e.g., Meridian Federal Systems, SAIC, Booz Allen, CACI, Peraton, Guidehouse) are **not** automatically excluded by size, even above the >25,000 cap. The size cap exists to filter bureaucratic commercial mega-corps; in the federal-contractor niche, scale and FedRAMP-authorized infrastructure are the value proposition, and pay bands ($110–160K) actually fit the candidate's target. These companies still must pass the clearance filter (Active/TS/SCI required → disqualify; basic obtainable Secret → -1 penalty).
 
 ### Industry Exclusions
 
@@ -47,6 +51,8 @@ The following industries should be excluded due to compliance overhead, cultural
 **Note on Healthcare:** Healthcare companies are no longer automatically excluded. HIPAA compliance adds overhead but the actual infrastructure work (AWS, Terraform, etc.) is substantially similar. Apply a -1 scoring penalty for HIPAA environments.
 
 **Note on Government:** Government employers and contractors are acceptable if they do not require Active security clearance or Top Secret/SCI. Roles requiring basic obtainable clearance should be reviewed manually with a -1 scoring penalty.
+
+**Note on Cloud Service Providers (CSPs) and FedRAMP:** CSPs (companies whose primary commercial product is a SaaS/PaaS/IaaS offering) are an acceptable secondary target — including ones that pursue FedRAMP authorization for their own product. The candidate's prior FedRAMP experience is a +1 booster in this case.
 
 ### Fad Industry Exclusions
 
@@ -84,7 +90,7 @@ FOR each company:
         EXCLUDE with reason "Business Model: {model}"
     ELSE IF employee_count < 50:
         EXCLUDE with reason "Company Size: Too small ({count} employees)"
-    ELSE IF employee_count > 10000:
+    ELSE IF employee_count > 25000:
         EXCLUDE with reason "Company Size: Too large ({count} employees)"
     ELSE IF industry IN excluded_industries:
         EXCLUDE with reason "Industry: {industry}"
@@ -110,7 +116,7 @@ For each excluded company, document:
 |----------|-------------------|
 | **Fintech (not pure finance)** | May pass if tech-focused, not banking |
 | **Company size 50-100** | May pass if growing rapidly, modern tech stack |
-| **Company size 5,000-10,000** | May pass if engineering-focused culture |
+| **Company size 5,000-25,000** | May pass; apply -1 penalty (10K-25K). Scale is not disqualifying — bureaucracy is the concern |
 | **Government without clearance** | Acceptable; apply -1 penalty if basic clearance obtainable |
 
 ### Companies That Always Fail

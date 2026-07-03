@@ -1,6 +1,3 @@
-<!-- CUSTOMIZE: This file defines one person's job search criteria. -->
-<!-- Adjust all values below to match your own preferences, experience level, and target roles. -->
-
 # Job Search Preferences
 
 This document defines the criteria and preferences for filtering job opportunities. All workflow prompts and subagents should reference this file when evaluating positions.
@@ -9,19 +6,29 @@ This document defines the criteria and preferences for filtering job opportuniti
 
 ## Work Arrangement Requirements
 
-### Remote Work (MANDATORY)
-- **Required:** Fully remote positions only
+**Work arrangement and location are driven by `config.yml` → `location`. Read it first.**
+Use `location.remote` (true/false), `location.city`, `location.state`, `location.state_abbr`,
+and `location.accept_remote_in_local_mode`. The rules below adapt to the configured mode.
+
+### When `location.remote: true` (remote-only — current default)
+- **Required:** Fully remote positions only. `location.state` (e.g. Oregon/ID) is the candidate's residence.
 - **Unacceptable:** Hybrid, on-site, or any in-office requirements
+- **Unacceptable:** "Remote" positions restricted to a state list that excludes `location.state` / `location.state_abbr`
 - **Red Flags:**
   - "Occasional office visits"
   - "Quarterly team meetings in person"
   - "15% travel" or any travel percentage
   - "Must be within commuting distance"
 
-### Geographic Requirements
+### When `location.remote: false` (local — target = `location.city, location.state`)
+- **Required:** Roles in or near `location.city, location.state`. Hybrid and on-site are acceptable here.
+- **Also acceptable:** Fully-remote US roles — unless `location.accept_remote_in_local_mode: false`.
+- **Unacceptable:** Roles in a different metro that require relocation away from the target.
+- The remote-mode travel/office-visit red flags above do **not** apply (on-site is expected locally).
+
+### Geographic Requirements (both modes)
 - **Required:** US-based companies only
 - **Required:** US-based positions (no international roles)
-- **Unacceptable:** Positions requiring relocation
 - **Unacceptable:** International remote positions
 
 ---
@@ -31,10 +38,12 @@ This document defines the criteria and preferences for filtering job opportuniti
 ### Company Size
 - **Preferred Range:** 100-2,000 employees
 - **Minimum:** 50 employees (smaller companies may lack dedicated infrastructure teams)
-- **Maximum:** 10,000 employees (larger companies often have bureaucratic processes)
+- **Maximum:** 25,000 employees (larger companies often have bureaucratic processes; 10,000-25,000 incurs a -1 penalty rather than exclusion — scale is not the concern, bureaucracy is)
+- **Exemption:** Established federal/government IT contractors (Meridian Federal Systems, SAIC, Booz Allen, CACI, Peraton, Guidehouse, etc.) are exempt from the >25,000 cap. Scale and FedRAMP-authorized infrastructure are the value proposition in this niche; pay bands fit target range. Active/TS/SCI clearance requirements still disqualify on a per-role basis.
 
 ### Business Model Requirements
 - **Required:** Internal IT/Infrastructure positions
+- **Acceptable secondary target:** Cloud Service Providers (CSPs) — companies whose primary commercial product is a SaaS/PaaS/IaaS offering, where FedRAMP (if applicable) is something they pursue *for their own product*, not something they sell to others.
 - **Avoid:**
   - Managed Service Providers (MSPs)
   - IT Consulting firms
@@ -54,7 +63,10 @@ This document defines the criteria and preferences for filtering job opportuniti
 
 **Accepted with scoring penalty (-1):**
 - Healthcare (HIPAA compliance overhead, but infrastructure work is substantially similar)
-- Government/Federal without Active or TS/SCI clearance (FedRAMP compliance overhead)
+
+**Accepted with scoring boost (+1):**
+- FedRAMP environments where the employer is a **CSP buy-side** (pursuing authorization for their own cloud product). Candidate's prior FedRAMP IaC experience is directly relevant.
+- Government/Federal without Active or TS/SCI clearance — provided the role is *not* sell-side FedRAMP (3PAO/advisory)
 
 **Note on AI Companies:** Enterprise-scale AI companies (>10,000 employees) like major cloud providers are acceptable. Small AI startups (Series A-C) are chasing a trend without sustainable business models and carry high employment risk.
 
@@ -102,14 +114,13 @@ This document defines the criteria and preferences for filtering job opportuniti
   - Primary architectural decision-making responsibility
 
 ### Education Requirements
-<!-- CUSTOMIZE: Replace with your own education level -->
 - **Background:** Associate's degree in IT
 - **Acceptable:**
   - "Degree preferred"
   - "Degree or equivalent experience"
   - "Relevant education or experience"
-- **Concerning:** "Bachelor's degree required"
-- **Disqualifying:** "Master's degree required"
+- **Concerning (-1 penalty, not disqualifying):** "Bachelor's degree required" without an "or equivalent experience" alternative — frequently unenforced; review manually
+- **Disqualifying:** "Master's degree required", "PhD required"
 
 ---
 
@@ -160,8 +171,8 @@ This document defines the criteria and preferences for filtering job opportuniti
 - "Build and maintain internal tools" as primary duty
 - "Develop automation frameworks" (vs using/configuring them)
 
-**KEY DISTINCTION:**
-The difference is between *using* existing tools and writing scripts vs *developing* software/applications. If a job posting mentions "software development experience" as a requirement, it is a software developer role disguised as infrastructure -- reject immediately.
+**⚠️ KEY DISTINCTION:**
+The difference is between *using* existing tools and writing scripts vs *developing* software/applications. If a job posting mentions "software development experience" as a requirement, it is a software developer role disguised as infrastructure—reject immediately.
 
 ### Technical Red Flags
 - Bare-metal infrastructure focus (KVM, QEMU, hypervisor management)
@@ -182,14 +193,15 @@ The difference is between *using* existing tools and writing scripts vs *develop
 
 **Accept with penalty (-1):**
 - HIPAA (healthcare infrastructure work is similar to standard cloud work)
-- FedRAMP (government sector compliance overhead)
 - Basic "ability to obtain" Secret clearance
+
+**Accept with boost (+1):**
+- FedRAMP — when the employer is a **CSP buy-side** (the CSP pursuing authorization for their own product, not a 3PAO selling assessment/advisory services). Prior FedRAMP IaC experience is a direct match.
 
 ---
 
 ## Salary Requirements
 
-<!-- CUSTOMIZE: Replace with your own salary expectations -->
 - **Minimum:** $80,000 USD
 - **Target Range:** $100,000 - $130,000 USD
 - **Upper Caution:** $150,000+ may carry senior-level expectations
@@ -200,10 +212,10 @@ The difference is between *using* existing tools and writing scripts vs *develop
 
 | Criterion | Required | Preferred | Avoid |
 |-----------|----------|-----------|-------|
-| Remote | Fully remote | - | Hybrid, on-site |
-| Location | US-based | - | International |
-| Company Size | 50-10,000 | 100-2,000 | <50 or >10,000 |
-| Business Model | Internal IT | - | MSP, consulting |
+| Work arrangement | ✅ Per `config.yml` `location.remote`: fully remote (true) OR in `city, state` incl. hybrid/on-site (false) | - | Remote mode: hybrid/on-site, state-restricted excluding `{state}`. Local mode: other metros |
+| Location | ✅ US-based; remote→available in `{state}`, local→in `{city}, {state}` (remote-US also OK) | - | International; remote mode: state-restricted without `{state}` |
+| Company Size | 50-25,000 | 100-2,000 | <50 or >25,000 |
+| Business Model | ✅ Internal IT | - | MSP, consulting |
 | Cloud Platform | - | AWS | GCP-exclusive |
 | IaC Tools | - | Terraform, Ansible | None mentioned |
 | Experience Level | Mid-level | 2-5 years | Senior titles |

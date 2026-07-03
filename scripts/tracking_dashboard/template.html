@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>%%TITLE%%</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         margin: 24px; color: #222; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtle { color: #666; font-size: 13px; margin-bottom: 20px; }
+  table { border-collapse: collapse; margin-bottom: 36px; font-size: 13px; }
+  th, td { border: 1px solid #ddd; padding: 6px 10px; }
+  th { background: #f4f4f4; cursor: pointer; user-select: none; text-align: left; }
+  th.sort-asc::after { content: " ▲"; color: #888; }
+  th.sort-desc::after { content: " ▼"; color: #888; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:nth-child(even) { background: #fafafa; }
+  .trend-up { color: #118a3e; }
+  .trend-down { color: #c0392b; }
+  .trend-flat { color: #888; }
+</style>
+</head>
+<body>
+<h1>%%TITLE%%</h1>
+<div class="subtle">Source CSV: <code>%%CSV_PATH%%</code> &middot; Generated: %%GENERATED_AT%%</div>
+
+<h2>Rolling Totals</h2>
+<table id="rolling"></table>
+
+<h2>Execution Log</h2>
+<table id="log"></table>
+
+<script>
+const data = %%DATA_JSON%%;
+
+function renderTable(tableId, columns, rows, numericCols) {
+  const table = document.getElementById(tableId);
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  columns.forEach((col, idx) => {
+    const th = document.createElement('th');
+    th.textContent = col;
+    th.dataset.idx = idx;
+    th.dataset.dir = '';
+    th.addEventListener('click', () => sortTable(table, idx, numericCols.includes(col)));
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    columns.forEach(col => {
+      const td = document.createElement('td');
+      const val = r[col] === undefined ? '' : r[col];
+      td.textContent = val;
+      if (numericCols.includes(col)) td.classList.add('num');
+      if (col === 'trend') {
+        if (val === '>>>') { td.classList.add('trend-up'); td.textContent = '▲'; }
+        else if (val === '<<<') { td.classList.add('trend-down'); td.textContent = '▼'; }
+        else { td.classList.add('trend-flat'); }
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+function sortTable(table, colIdx, numeric) {
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const th = table.querySelectorAll('th')[colIdx];
+  const nextDir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+  table.querySelectorAll('th').forEach(h => {
+    h.dataset.dir = '';
+    h.classList.remove('sort-asc', 'sort-desc');
+  });
+  th.dataset.dir = nextDir;
+  th.classList.add(nextDir === 'asc' ? 'sort-asc' : 'sort-desc');
+
+  rows.sort((a, b) => {
+    const av = a.children[colIdx].textContent.trim();
+    const bv = b.children[colIdx].textContent.trim();
+    if (numeric) return (parseFloat(av) || 0) - (parseFloat(bv) || 0);
+    return av.localeCompare(bv);
+  });
+  if (nextDir === 'desc') rows.reverse();
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+renderTable('rolling', data.rolling_columns, data.rolling_rows, data.rolling_numeric);
+renderTable('log', data.log_columns, data.log_rows, data.log_numeric);
+</script>
+</body>
+</html>

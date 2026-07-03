@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" mc:Ignorable="w14 wp14 w15">
+<w:body>
+
+{# ============================================================ #}
+{# SALUTATION                                                   #}
+{# ============================================================ #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="120"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>{{ recipient }}</w:t>
+    </w:r>
+</w:p>
+
+{# ============================================================ #}
+{# BODY PARAGRAPHS                                              #}
+{# ============================================================ #}
+{% for para in paragraphs %}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="276" w:before="0" w:after="200"/>
+        <w:jc w:val="both"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>{{ para }}</w:t>
+    </w:r>
+</w:p>
+{% endfor %}
+
+{# ============================================================ #}
+{# SIGNATURE BLOCK                                              #}
+{# ============================================================ #}
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>Sincerely,</w:t>
+    </w:r>
+</w:p>
+
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="200" w:after="0"/>
+        <w:rPr>
+            <w:b/><w:bCs/>
+            <w:sz w:val="22"/><w:szCs w:val="22"/>
+        </w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr>
+            <w:b/><w:bCs/>
+            <w:sz w:val="22"/><w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t>{{ signature.name }}</w:t>
+    </w:r>
+</w:p>
+
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>{{ signature.phone }}</w:t>
+    </w:r>
+</w:p>
+
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>{{ signature.email }}</w:t>
+    </w:r>
+</w:p>
+
+<w:p>
+    <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:spacing w:lineRule="auto" w:line="240" w:before="0" w:after="0"/>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+    </w:pPr>
+    <w:r>
+        <w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>
+        <w:t>{{ signature.linkedin }}</w:t>
+    </w:r>
+</w:p>
+
+{# ============================================================ #}
+{# PAGE SETTINGS (sectPr)                                       #}
+{# ============================================================ #}
+<w:sectPr>
+    <w:type w:val="nextPage"/>
+    <w:pgSz w:w="12240" w:h="15840"/>
+    <w:pgMar w:left="1440" w:right="1440" w:gutter="0" w:header="0" w:top="1440" w:footer="0" w:bottom="1440"/>
+    <w:pgNumType w:fmt="decimal"/>
+    <w:formProt w:val="false"/>
+    <w:textDirection w:val="lrTb"/>
+    <w:docGrid w:type="default" w:linePitch="360" w:charSpace="4096"/>
+</w:sectPr>
+
+</w:body>
+</w:document>

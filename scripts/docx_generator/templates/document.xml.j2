@@ -14,7 +14,7 @@
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia" w:cs="Arial"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
             <w:sz w:val="36"/><w:szCs w:val="36"/>
         </w:rPr>
     </w:pPr>
@@ -22,7 +22,7 @@
         <w:rPr>
             <w:rFonts w:cs="Arial" w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
             <w:sz w:val="36"/><w:szCs w:val="36"/>
         </w:rPr>
         <w:t>{{ name }}</w:t>
@@ -64,7 +64,7 @@
         <w:rPr>
             <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
             <w:b/><w:bCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
     </w:pPr>
     <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:r>
@@ -98,7 +98,7 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
     </w:pPr>
     <w:r>
@@ -106,27 +106,27 @@
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ exp.company }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ exp.location }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t>{{ exp.role }}</w:t>
         <w:tab/>
@@ -135,7 +135,7 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t>{{ exp.dates }}</w:t>
     </w:r>
@@ -158,76 +158,21 @@
             <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
     </w:pPr>
+    {% for run in bullet|parse_runs %}
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
-            <w:b w:val="false"/><w:bCs w:val="false"/>
+            {% if run.bold %}<w:b/><w:bCs/>{% else %}<w:b w:val="false"/><w:bCs w:val="false"/>{% endif %}
             <w:i w:val="false"/><w:iCs w:val="false"/>
             <w:color w:val="000000"/>
             <w:sz w:val="20"/><w:szCs w:val="20"/>
         </w:rPr>
-        <w:t>{{ bullet }}</w:t>
+        <w:t xml:space="preserve">{{ run.text }}</w:t>
     </w:r>
+    {% endfor %}
 </w:p>
 {% endfor %}
 {% endfor %}
-
-{# Prior experience entries (minimal info, no bullets) #}
-{% if prior_experience %}
-{% for prior in prior_experience %}
-<w:p>
-    <w:pPr>
-        <w:pStyle w:val="Normal"/>
-        <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
-        <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
-        <w:jc w:val="both"/>
-        <w:rPr>
-            <w:rFonts w:cs="Calibri"/>
-            <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
-        </w:rPr>
-    </w:pPr>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:cs="Calibri"/>
-            <w:b/><w:bCs/>
-            <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
-        </w:rPr>
-        <w:t xml:space="preserve">{{ prior.company }} </w:t>
-    </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:cs="Calibri"/>
-            <w:b/><w:bCs/>
-            <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
-        </w:rPr>
-        <w:t xml:space="preserve">{{ prior.location }} </w:t>
-    </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:cs="Calibri"/>
-            <w:b/><w:bCs/>
-            <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
-        </w:rPr>
-        <w:t>{{ prior.role }}</w:t>
-        <w:tab/>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:cs="Calibri"/>
-            <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
-        </w:rPr>
-        <w:t>{{ prior.dates }}</w:t>
-    </w:r>
-</w:p>
-{% endfor %}
-{% endif %}
 
 {# Empty spacer before next section #}
 <w:p>
@@ -236,9 +181,9 @@
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
         <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
         <w:jc w:val="both"/>
-        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr>
     </w:pPr>
-    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr></w:r>
 </w:p>
 
 {# ============================================================ #}
@@ -276,10 +221,15 @@
         <w:contextualSpacing/>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
     </w:pPr>
+    {% for run in proj.bullet|parse_runs %}
     <w:r>
-        <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t>{{ proj.bullet }}</w:t>
+        <w:rPr>
+            {% if run.bold %}<w:b/><w:bCs/>{% endif %}
+            <w:sz w:val="20"/><w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t xml:space="preserve">{{ run.text }}</w:t>
     </w:r>
+    {% endfor %}
 </w:p>
 {% endfor %}
 
@@ -290,9 +240,9 @@
         <w:tabs><w:tab w:val="clear" w:pos="720"/><w:tab w:val="right" w:pos="9792" w:leader="none"/></w:tabs>
         <w:spacing w:lineRule="auto" w:line="204" w:before="0" w:after="0"/>
         <w:jc w:val="both"/>
-        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr>
+        <w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr>
     </w:pPr>
-    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="142440"/></w:rPr></w:r>
+    <w:r><w:rPr><w:rFonts w:cs="Calibri"/><w:i/><w:iCs/><w:color w:val="000000"/></w:rPr></w:r>
 </w:p>
 
 {# ============================================================ #}
@@ -313,7 +263,7 @@
     </w:r>
     <w:r>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t xml:space="preserve"> &#8211; {{ skill.technologies }}</w:t>
+        <w:t xml:space="preserve">: {{ skill.technologies }}</w:t>
     </w:r>
 </w:p>
 {% endfor %}
@@ -347,7 +297,7 @@
     </w:r>
     <w:r>
         <w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>
-        <w:t xml:space="preserve"> &#8211; {{ cert.name }}</w:t>
+        <w:t xml:space="preserve">: {{ cert.name }}</w:t>
         <w:tab/>
         <w:t>{{ cert.date }}</w:t>
     </w:r>
@@ -380,7 +330,7 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
     </w:pPr>
     <w:r>
@@ -388,37 +338,37 @@
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.institution }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.location }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t xml:space="preserve">{{ edu.degree }} </w:t>
     </w:r>
-    <w:r><w:rPr><w:color w:val="142440"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
+    <w:r><w:rPr><w:color w:val="000000"/></w:rPr><w:t xml:space="preserve">&#8226; </w:t></w:r>
     <w:r>
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:b/><w:bCs/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t> {{ edu.field }}</w:t>
         <w:tab/>
@@ -427,7 +377,7 @@
         <w:rPr>
             <w:rFonts w:cs="Calibri"/>
             <w:i/><w:iCs/>
-            <w:color w:val="142440"/>
+            <w:color w:val="000000"/>
         </w:rPr>
         <w:t>{{ edu.date }}</w:t>
     </w:r>

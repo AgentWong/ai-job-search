@@ -1,12 +1,44 @@
 .DS_Store
 
+# Obsidian
+.obsidian
+
 # Temporary AI Reference Files
 .ai_references
+
+# Browser MCP scratch directory (snapshots/screenshots from Chrome DevTools MCP)
+.claude/scratch/*
+!.claude/scratch/.gitkeep
 
 # Word Document lock files
 *.docx#
 *.odt#
 
+# Personal data — never commit your real job search activity to this public repo.
+job_search_log/
+results/tracking/
+results/application_queue.csv
+results/*_pending_review.json
+results/*.json
+!results/.gitkeep
+claude_desktop/
+config/profile/
+Clippings/*
+!Clippings/.gitkeep
+resumes/generated/*
+!resumes/generated/.gitkeep
+
+# Secrets / machine-specific local settings
+.mcp.json
+.env
+.envrc
+.claude/settings.local.json
+
+# Temporary Artifacts
+# Firecrawl ATS platform search cache (per-run debug artifacts, preserved between batches)
+results/ats_platform_cache/
+results/ats_platform_validation_cache/
+results/ats-search-progress.md
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
