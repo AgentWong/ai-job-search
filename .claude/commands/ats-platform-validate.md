@@ -38,9 +38,9 @@ Orchestrator: read validation_summary.json → write report → emit ready-to-pa
 **Why this shape:** the previous version dispatched up to 16 `firecrawl-job-search`
 MCP subagents (one per candidate), each re-serializing its raw search payload
 into an LLM context. Search is deterministic I/O; only the report wording needs
-an LLM. This mirrors the `/ats-platform-search` token-regression fix (see
-[docs/ats-platform-search-token-regression-assessment.md](../../docs/ats-platform-search-token-regression-assessment.md)
-§6 "Option A").
+an LLM. This mirrors the `/ats-platform-search` Python-driven search (see
+[docs/llm-deterministic-offload-strategy.md](../../docs/llm-deterministic-offload-strategy.md)
+for the pattern in the abstract).
 
 ### 🧱 Context discipline
 

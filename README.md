@@ -56,6 +56,25 @@ Resume tailoring uses `config/cv_full.md` as the sole source of truth. Agents ex
 |---------|--------------|
 | `/data-analysis` | Monthly: aggregate effectiveness tracking + application history into a report; recommends `config.yml` tuning |
 
+## Cost
+
+This project is designed to run on flat-rate consumer plans, not metered API billing. Because the token-heavy work (pagination, filtering, scoring math, CSV I/O) is offloaded to Python and only judgment calls hit the LLM, the whole search-and-tailor loop fits comfortably inside a Claude Pro subscription.
+
+| Service | Plan | Cost | Needed for |
+|---------|------|------|------------|
+| [Claude Code](https://claude.com/claude-code) | Claude Pro | **$20/mo** (less on an annual commitment) | Every workflow (the orchestrators and review agents) |
+| [Firecrawl](https://www.firecrawl.dev/) | Hobby | **$19/mo** | Only `/ats-platform-search` and `/ats-platform-validate` |
+
+**Total: ~$39/mo**, or just **$20/mo** if you skip the Firecrawl-backed platform search and rely on the direct-API discovery workflows (`/ats-api-search`, `/linkedin-api-search`, `/builtin-api-search`) and `/hiringcafe-job-search`, which hit public endpoints and cost nothing beyond your Claude plan.
+
+**Why it stays this cheap:**
+
+- **The [Python-stages, LLM-reviews](#python-stages-llm-reviews) split** keeps searches, filtering, and scoring math off the LLM. The model is invoked only for fuzzy disqualification and prose generation, so a Claude Pro plan's usage limits are enough for regular runs.
+- **Firecrawl credit refunds.** Each `/v2/search` call costs ~2 credits per 10 results, and the workflow immediately submits feedback via `/v2/search/{id}/feedback` to refund 1 credit per query — roughly halving the effective search cost. (Refunds are capped at ~100/day by Firecrawl.)
+- **Direct-API discovery is free.** The ATS-API, LinkedIn, Built In, and Hiring Cafe workflows use public/guest endpoints — no scraping credits are spent on search.
+
+Your actual Claude usage depends on how often you run searches and how many resumes/cover letters you generate; heavy daily use may bump into Pro's rate limits, in which case the Max plan raises the ceiling.
+
 ## Quick Start
 
 ### Prerequisites
@@ -163,7 +182,6 @@ All scoring logic lives in `shared/scoring_framework.md` — customize it for yo
 ## Documentation
 
 - [Resume Tailoring Workflow](docs/workflow-resume-tailoring.md) — end-to-end flow, agent responsibilities, output format
-- [ATS Platform Search Workflow](docs/workflow-ats-platform-search.md) — search flow, credit usage, tuning
 - [LLM-Deterministic Offload Strategy](docs/llm-deterministic-offload-strategy.md) — the Python-stages/LLM-reviews pattern in the abstract
 - [Pipeline Events Guide](docs/pipeline-events-guide.md) — tracking application status by hand after you apply
 

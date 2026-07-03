@@ -36,10 +36,10 @@ Orchestrator: final report → effectiveness trackers (ats_role, ats_board)
 ```
 
 **Why this shape:** search is deterministic I/O (Python); scoring is
-rubric-against-prose judgment (LLM). See
-[docs/ats-platform-search-token-regression-assessment.md](../../docs/ats-platform-search-token-regression-assessment.md)
-§6 "Option A" for the full rationale (it replaced an LLM search subagent that
-re-serialized the entire raw payload, doubling cache-read cost).
+rubric-against-prose judgment (LLM). This replaced an LLM search subagent that
+re-serialized the entire raw payload into context, doubling cache-read cost. See
+[docs/llm-deterministic-offload-strategy.md](../../docs/llm-deterministic-offload-strategy.md)
+for the Python-stages/LLM-reviews pattern in the abstract.
 
 ### 🧱 Context discipline (read this — it is the whole point)
 
