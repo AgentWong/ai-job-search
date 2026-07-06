@@ -123,7 +123,7 @@ All configuration is in `config/`. The included files are a working example for 
 | `config/job_preferences.md` | Set your remote/salary/industry/experience preferences |
 | `config/config.yml` | Job boards, target role tiers, and the `location` block (remote vs. local search, your residence state for eligibility checks) |
 | `config/exclusions.yml` | Companies you've already applied to, been rejected by, or want to skip |
-| `config/company_targets_ats.csv` | Curate companies for the ATS API scraper to monitor directly (regenerate `company_targets_ats.json` after editing, via `scripts/curation_appender/rebuild_companion.py`) |
+| `config/company_targets_ats.csv` | Curate companies for the ATS API scraper to monitor directly (regenerate `company_targets_ats.json` after editing, via `scripts/curation_appender/rebuild_companion.py`). New candidates are researched with [`claude_desktop/company_curation_ats/project_instructions.md`](claude_desktop/company_curation_ats/project_instructions.md) — a project for Claude Desktop (web app), whose research mode runs the thorough multi-query web searches this curation needs, which aren't available directly in Claude Code |
 | `.claude/skills/writing-style/SKILL.md` | Add samples of your own writing so AI-generated resumes and cover letters sound like you |
 
 The `shared/` directory contains scoring rules referenced by every review agent:
@@ -142,6 +142,8 @@ ai-job-search/
 │   ├── commands/         # Slash commands (orchestrators)
 │   ├── agents/           # Subagents (isolated task execution)
 │   └── skills/           # writing-style: your voice, for resume/cover-letter prose
+├── claude_desktop/
+│   └── company_curation_ats/project_instructions.md  # Claude Desktop research-mode project for sourcing ATS company targets
 ├── config/
 │   ├── cv_full.md            # Complete work history (source of truth)
 │   ├── linkedin_profile.md   # LinkedIn profile content

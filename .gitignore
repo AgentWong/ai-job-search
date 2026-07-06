@@ -21,7 +21,6 @@ results/application_queue.csv
 results/*_pending_review.json
 results/*.json
 !results/.gitkeep
-claude_desktop/
 config/profile/
 Clippings/*
 !Clippings/.gitkeep
